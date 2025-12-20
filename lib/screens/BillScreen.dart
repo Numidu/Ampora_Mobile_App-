@@ -1,9 +1,11 @@
 // screens/BillScreen.dart
+import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/subscription_service.dart';
 import 'package:electric_app/widget/SubscriptionCard.dart';
 import 'package:electric_app/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/models/subscription.dart';
+import 'package:provider/provider.dart%20';
 
 class Billscreen extends StatefulWidget {
   const Billscreen({super.key});
@@ -15,20 +17,35 @@ class Billscreen extends StatefulWidget {
 class _BillscreenState extends State<Billscreen> {
   final SubscriptionService _subscriptionService = SubscriptionService();
 
-  final String userId = "fea0a8ac-c615-4d5d-80c3-f5f68782ee4a";
+  String? userId;
 
   late Future<Subscription?> _subscriptionsFuture;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _subscriptionsFuture = _subscriptionService.fetchSubscription(userId);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_initialized) return;
+    _initialized = true;
+
+    final user = context.read<AuthProvider>().currentUser;
+    userId = user?.userId;
+
+    if (userId != null) {
+      _subscriptionsFuture = _subscriptionService.fetchSubscription(userId!);
+    } else {
+      _subscriptionsFuture = Future.error("User not logged in");
+    }
   }
 
   Future<void> _refresh() async {
+    if (userId == null) return;
+
     setState(() {
-      _subscriptionsFuture = _subscriptionService.fetchSubscription(userId);
+      _subscriptionsFuture = _subscriptionService.fetchSubscription(userId!);
     });
+
     await _subscriptionsFuture;
   }
 
@@ -101,6 +118,7 @@ class _BillscreenState extends State<Billscreen> {
                 status: statusFor("Basic"),
                 price: 29.99,
                 onActivated: _refresh,
+                userid: userId!,
               ),
 
               // Premium card
@@ -109,6 +127,7 @@ class _BillscreenState extends State<Billscreen> {
                 status: statusFor("Premium"),
                 price: 49.99,
                 onActivated: _refresh,
+                userid: userId!,
               ),
 
               // Enterprise card
@@ -117,6 +136,7 @@ class _BillscreenState extends State<Billscreen> {
                 status: statusFor("Enterprise"),
                 price: 99.99,
                 onActivated: _refresh,
+                userid: userId!,
               ),
 
               const SizedBox(height: 16),

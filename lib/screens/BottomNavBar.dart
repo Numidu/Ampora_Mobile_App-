@@ -1,4 +1,5 @@
 import 'package:electric_app/screens/BillScreen.dart';
+import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/HomeScreen.dart';
 import 'package:electric_app/screens/ProfileScreen.dart';
 import 'package:electric_app/screens/TripPlanner.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<Bottomnavbar> {
     Homescreen(),
     const TripPlanner(),
     const Billscreen(),
-    const Profilescreen()
+    const Chargerscreen()
   ];
 
   void _onTap(int idx) {

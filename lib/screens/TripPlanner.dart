@@ -413,7 +413,10 @@ class StationCard extends StatelessWidget {
               ],
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'screen/Charger',
+                    arguments: station['name']);
+              },
               child: const Text("Navigate"),
             )
           ],

@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:electric_app/main.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/service/vehicle_service.dart';
@@ -35,7 +34,7 @@ class _HomescreenState extends State<Homescreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_initialized) return; // 👈 prevent multiple calls
+    if (_initialized) return;
     _initialized = true;
 
     final user = context.read<AuthProvider>().currentUser;

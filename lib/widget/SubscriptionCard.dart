@@ -8,6 +8,7 @@ class SubscriptionCard extends StatelessWidget {
   final String status;
   final double price;
   final VoidCallback? onActivated;
+  final String? userid;
 
   const SubscriptionCard({
     super.key,
@@ -15,6 +16,7 @@ class SubscriptionCard extends StatelessWidget {
     required this.status,
     required this.price,
     this.onActivated,
+    required this.userid,
   });
 
   Color getPlanColor() {
@@ -33,7 +35,7 @@ class SubscriptionCard extends StatelessWidget {
   // keep this if you want to use it elsewhere; not used directly by the sheet below
   Future<void> saveSubscriptionToService() async {
     await SubscriptionService().createSubscription({
-      "userId": "4df6809b-8d4c-45aa-aeab-f0e4cb3e2aba",
+      "userId": userid,
       "planName": title,
       "monthlyFree": price,
       "active": true,
@@ -155,7 +157,7 @@ class SubscriptionCard extends StatelessWidget {
               try {
                 // call service and await
                 await SubscriptionService().createSubscription({
-                  "userId": "4df6809b-8d4c-45aa-aeab-f0e4cb3e2aba",
+                  "userId": userid,
                   "planName": title,
                   "monthlyFree": price,
                   "active": true,

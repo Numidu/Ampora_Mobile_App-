@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class Subscription {
   final String? userId;
   final String planName;

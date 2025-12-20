@@ -2,6 +2,8 @@ import 'package:electric_app/provider/app_provider.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/screens/AddVehicle.dart';
 import 'package:electric_app/screens/BottomNavBar.dart';
+import 'package:electric_app/screens/ChargerDetails.dart';
+import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/Login.dart';
 import 'package:electric_app/screens/SettingScreen.dart';
 import 'package:electric_app/screens/SignInScreen.dart';
@@ -31,6 +33,8 @@ class ElECTRIC_APP extends StatelessWidget {
           'screens/AddVehicle': (context) => const Addvehicle(),
           'screens/Settings': (context) => const Settingscreen(),
           'screens/SignIn': (context) => const Signinscreen(),
+          'screen/Charger': (context) => const Chargerscreen(),
+          'screen/ChargerDetails': (context) => const Chargerdetails(),
         },
         theme: ThemeData(
           primarySwatch: Colors.green,
