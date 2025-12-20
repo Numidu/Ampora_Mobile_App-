@@ -39,6 +39,7 @@ class _SigninscreenState extends State<Signinscreen> {
         'email': email,
         'password': password,
         'phone': phone,
+        'role': "USER"
       });
       if (issucess) {
         ScaffoldMessenger.of(context).showSnackBar(

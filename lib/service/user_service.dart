@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:electric_app/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decode/jwt_decode.dart';
 
 class UserService {
-  final String apiUrl = "http://10.0.2.2:8083/api/auth/register";
+  final String apiUrl = "http://34.14.149.31:8083/api/auth/register";
 
   Future<bool> registerUser(Map<String, dynamic> userData) async {
     final response = await http.post(
@@ -18,12 +20,65 @@ class UserService {
     }
   }
 
-  Future<void> loginUser(String email, String password) async {
-    final response = await http.get(
-      Uri.parse('http://172.20.10.4:8083/api/user'),
-      headers: {'Content-Type': 'application/json'},
+  Future<String?> loginUser(String email, String password) async {
+    final url = Uri.parse('http://34.14.149.31:8083/api/auth/login');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
     );
+
     if (response.statusCode == 200) {
-    } else {}
+      final data = jsonDecode(response.body);
+      return data['token'];
+    } else {
+      print("Login failed: ${response.body}");
+    }
+  }
+
+  Future<List<User>> getAllUsers(String token) async {
+    final url = Uri.parse("http://34.14.149.31:8083/api/users");
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print("STATUS CODE: ${response.statusCode}");
+    print("RAW BODY: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      print("JSON LENGTH: ${data.length}");
+
+      return data.map((e) {
+        print("USER JSON: $e");
+        return User.fromJson(e); // 👈 CRASH HERE
+      }).toList();
+    } else {
+      throw Exception("Failed to load users");
+    }
+  }
+
+  String getEmailFromToken(String token) {
+    final payload = Jwt.parseJwt(token);
+
+    return payload['sub'];
+  }
+
+  User findUserByEmail(List<User> users, String email) {
+    return users.firstWhere(
+      (user) => user.email == email,
+      orElse: () => throw Exception("User not found"),
+    );
   }
 }

@@ -1,6 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:electric_app/main.dart';
+import 'package:electric_app/provider/authj_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/service/vehicle_service.dart';
+import 'package:provider/provider.dart%20';
 import '../models/vehicle.dart';
 
 class Homescreen extends StatefulWidget {
@@ -18,23 +21,40 @@ class _HomescreenState extends State<Homescreen> {
   ];
 
   final VehicleService vehicleService = VehicleService();
-  final String userId = "b654e39e-0a3d-43c7-8d68-d7b58633f49d";
+
+  String? userId;
 
   late Future<List<Vehicle>> _vehiclesFuture;
   final TextEditingController _searchController = TextEditingController();
   String _search = "";
   int _carouselIndex = 0;
 
+  bool _initialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    _vehiclesFuture = vehicleService.fetchVehicles(userId);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_initialized) return; // 👈 prevent multiple calls
+    _initialized = true;
+
+    final user = context.read<AuthProvider>().currentUser;
+    userId = user?.userId;
+
+    if (userId != null) {
+      _vehiclesFuture = vehicleService.fetchVehicles(userId!);
+    } else {
+      _vehiclesFuture = Future.error("User not logged in");
+    }
   }
 
   Future<void> _refresh() async {
+    if (userId == null) return;
+
     setState(() {
-      _vehiclesFuture = vehicleService.fetchVehicles(userId);
+      _vehiclesFuture = vehicleService.fetchVehicles(userId!);
     });
+
     await _vehiclesFuture;
   }
 
@@ -47,7 +67,9 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+    final user = context.read<AuthProvider>().currentUser;
+    userId = user?.userId;
+    print(user?.userId);
     return RefreshIndicator(
       onRefresh: _refresh,
       child: SingleChildScrollView(

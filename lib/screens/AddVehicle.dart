@@ -1,6 +1,8 @@
+import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/vehicle_service.dart';
 import 'package:electric_app/widget/Custom_Textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart%20';
 
 class Addvehicle extends StatefulWidget {
   const Addvehicle({super.key});
@@ -11,6 +13,7 @@ class Addvehicle extends StatefulWidget {
 
 class _AddvehicleState extends State<Addvehicle>
     with SingleTickerProviderStateMixin {
+  String? userId;
   final TextEditingController _efficience = TextEditingController();
   final TextEditingController _vehiModel = TextEditingController();
   final TextEditingController _BattryCapacity = TextEditingController();
@@ -19,6 +22,14 @@ class _AddvehicleState extends State<Addvehicle>
   bool _isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final user = context.read<AuthProvider>().currentUser;
+    userId = user?.userId;
+  }
 
   @override
   void initState() {
@@ -81,7 +92,7 @@ class _AddvehicleState extends State<Addvehicle>
         'batteryCapacityKwh': battryCapacity,
         'efficiencyKmPerKwh': vehiEfficience,
         'connectorType': connectorType,
-        "userId": "b654e39e-0a3d-43c7-8d68-d7b58633f49d"
+        "userId": userId
       });
 
       setState(() {

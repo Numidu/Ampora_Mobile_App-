@@ -58,7 +58,7 @@ class _HomeScreenState extends State<Bottomnavbar> {
           ),
         ),
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true),
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: Colors.white,
@@ -98,58 +98,100 @@ class _HomeScreenState extends State<Bottomnavbar> {
         ],
       ),
       body: SafeArea(child: _screens[_selectedIndex]),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-              bottomLeft: Radius.circular(25),
-              bottomRight: Radius.circular(25)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -3),
+      bottomNavigationBar: SafeArea(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            // Pill background
+            Container(
+              height: 64,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _navItem(Icons.map_outlined, "Map", 1),
+                  _navItem(Icons.ev_station_outlined, "Charge", 2),
+
+                  const SizedBox(width: 56), // space for center button
+
+                  _navItem(Icons.account_balance_wallet_outlined, "E-Pouch", 3),
+                  _navItem(Icons.more_horiz, "More", 4),
+                ],
+              ),
+            ),
+
+            // Center Home Button
+            Positioned(
+              bottom: 28,
+              child: GestureDetector(
+                onTap: () => _onTap(0),
+                child: Container(
+                  height: 56,
+                  width: 56,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.home_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(25),
-            topRight: Radius.circular(25),
-            bottomLeft: Radius.circular(25),
+      ),
+    );
+  }
+
+  Widget _navItem(IconData icon, String label, int index) {
+    final bool selected = _selectedIndex == index;
+
+    return GestureDetector(
+      onTap: () => _onTap(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 22,
+            color: selected
+                ? Theme.of(context).primaryColor
+                : Colors.grey.shade500,
           ),
-          child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: _onTap,
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white, // ✅ clean white background
-            selectedItemColor: const Color(0xFF009daa), // ✅ teal accent
-            unselectedItemColor: Colors.grey,
-            selectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: selected
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey.shade500,
             ),
-            showUnselectedLabels: true,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.home_rounded), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.map_rounded),
-                label: 'Trip',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.ev_station_rounded),
-                label: 'Stations',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded),
-                label: 'Profile',
-              ),
-            ],
           ),
-        ),
+        ],
       ),
     );
   }

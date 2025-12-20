@@ -1,4 +1,5 @@
 import 'package:electric_app/provider/app_provider.dart';
+import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/screens/AddVehicle.dart';
 import 'package:electric_app/screens/BottomNavBar.dart';
 import 'package:electric_app/screens/Login.dart';
@@ -16,8 +17,11 @@ void main() async {
 class ElECTRIC_APP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: MaterialApp(
         title: 'Electric App',
         initialRoute: 'screens/Login',
@@ -29,9 +33,10 @@ class ElECTRIC_APP extends StatelessWidget {
           'screens/SignIn': (context) => const Signinscreen(),
         },
         theme: ThemeData(
-            primarySwatch: Colors.green,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            brightness: Brightness.light),
+          primarySwatch: Colors.green,
+          brightness: Brightness.light,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
         debugShowCheckedModeBanner: false,
       ),
     );

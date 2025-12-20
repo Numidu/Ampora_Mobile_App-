@@ -155,11 +155,15 @@ class _TripPlannerState extends State<TripPlanner> {
       for (var s in stations) {
         markers.add(
           gmap.Marker(
-            markerId: gmap.MarkerId(s['stationId']),
-            position: gmap.LatLng(s['latitude'], s['longitude']),
-            infoWindow: gmap.InfoWindow(title: s['name']),
-            icon: stationIcon ?? gmap.BitmapDescriptor.defaultMarker,
-          ),
+              markerId: gmap.MarkerId(s['stationId']),
+              position: gmap.LatLng(s['latitude'], s['longitude']),
+              infoWindow: gmap.InfoWindow(title: s['name']),
+              icon: stationIcon ?? gmap.BitmapDescriptor.defaultMarker,
+              onTap: () {
+                setState(() {
+                  selectedStation = s;
+                });
+              }),
         );
       }
 
@@ -217,13 +221,16 @@ class _TripPlannerState extends State<TripPlanner> {
             right: 16,
             child: Material(
               elevation: 3,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
+              clipBehavior: Clip.antiAlias,
               child: TextField(
                 controller: citySearchCtrl,
                 onSubmitted: searchStationsByCity,
+                textAlignVertical: TextAlignVertical.center,
                 decoration: const InputDecoration(
                   hintText: "Search city (Colombo, Kandy...)",
-                  prefixIcon: Icon(Icons.location_city),
+                  prefixIcon: Icon(Icons.search),
+                  isDense: true,
                   border: InputBorder.none,
                   filled: true,
                 ),
@@ -263,38 +270,109 @@ class _TripPlannerState extends State<TripPlanner> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent, // 🔥 for rounded container
       builder: (_) => Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PlacePickerField(
-              label: "Start",
-              onSelected: (lat, lng, _) {
-                startLat = lat;
-                startLng = lng;
-              },
-            ),
-            const SizedBox(height: 8),
-            PlacePickerField(
-              label: "Destination",
-              onSelected: (lat, lng, _) {
-                endLat = lat;
-                endLng = lng;
-              },
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                planTrip();
-              },
-              child: const Text("Plan Trip"),
-            ),
-          ],
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 20,
+                offset: const Offset(0, -8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+
+              // 🔹 Drag handle
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Plan Your Route",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    PlacePickerField(
+                      label: "Start Location",
+                      onSelected: (lat, lng, _) {
+                        startLat = lat;
+                        startLng = lng;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    PlacePickerField(
+                      label: "Destination",
+                      onSelected: (lat, lng, _) {
+                        endLat = lat;
+                        endLng = lng;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      planTrip();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          const Color(0xFF009DAA), // your app color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      "Plan Trip",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
