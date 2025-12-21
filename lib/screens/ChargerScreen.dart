@@ -12,7 +12,16 @@ class Chargerscreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-      appBar: AppBar(title: Text(stationName)),
+      appBar: AppBar(
+        title: Text(stationName),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context, true),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: FutureBuilder<List<Charger>>(
         future: ChargerService().fetchChargers(stationName),
         builder: (context, snapshot) {
@@ -38,6 +47,7 @@ class Chargerscreen extends StatelessWidget {
                 power: c.powerKw.toString(),
                 type: c.type,
                 status: c.status,
+                id: c.chargerID,
               );
             },
           );

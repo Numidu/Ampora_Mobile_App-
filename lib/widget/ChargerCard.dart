@@ -2,12 +2,14 @@ import 'package:electric_app/models/charger.dart';
 import 'package:flutter/material.dart';
 
 class ChargerCard extends StatelessWidget {
+  final String id;
   final String power;
   final String type;
   final ChargerStatus status;
 
   const ChargerCard({
     super.key,
+    required this.id,
     required this.power,
     required this.type,
     required this.status,
@@ -88,8 +90,8 @@ class ChargerCard extends StatelessWidget {
           InkWell(
             onTap: () {
               if (status == ChargerStatus.AVAILABLE) {
-                Navigator.pushReplacementNamed(
-                    context, "screen/ChargerDetails");
+                Navigator.pushNamed(context, "screen/ChargerDetails",
+                    arguments: id);
               } else {
                 showDialog(
                   context: context,

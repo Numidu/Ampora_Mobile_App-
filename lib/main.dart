@@ -1,4 +1,3 @@
-import 'package:electric_app/provider/app_provider.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/screens/AddVehicle.dart';
 import 'package:electric_app/screens/BottomNavBar.dart';
@@ -21,7 +20,6 @@ class ElECTRIC_APP extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
@@ -34,7 +32,7 @@ class ElECTRIC_APP extends StatelessWidget {
           'screens/Settings': (context) => const Settingscreen(),
           'screens/SignIn': (context) => const Signinscreen(),
           'screen/Charger': (context) => const Chargerscreen(),
-          'screen/ChargerDetails': (context) => const Chargerdetails(),
+          'screen/ChargerDetails': (context) => const ChargerDetailsScreen(),
         },
         theme: ThemeData(
           primarySwatch: Colors.green,
