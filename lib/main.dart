@@ -6,6 +6,7 @@ import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/Login.dart';
 import 'package:electric_app/screens/SettingScreen.dart';
 import 'package:electric_app/screens/SignInScreen.dart';
+import 'package:electric_app/screens/StationScreen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart ';
@@ -33,6 +34,7 @@ class ElECTRIC_APP extends StatelessWidget {
           'screens/SignIn': (context) => const Signinscreen(),
           'screen/Charger': (context) => const Chargerscreen(),
           'screen/ChargerDetails': (context) => const ChargerDetailsScreen(),
+          'screen/Station': (context) => const Stationscreen()
         },
         theme: ThemeData(
           primarySwatch: Colors.green,

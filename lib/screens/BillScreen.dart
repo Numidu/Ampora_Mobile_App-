@@ -87,7 +87,6 @@ class _BillscreenState extends State<Billscreen> {
   Widget _buildBillScreen(Subscription? subscription) {
     String statusFor(String planTitle) {
       final active = subscription?.planName ?? '';
-      print(active);
       return active == planTitle ? "Activated" : "Inactive";
     }
 
@@ -98,155 +97,145 @@ class _BillscreenState extends State<Billscreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Column(children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(Icons.receipt_long, size: 30, color: Color(0xFF009daa)),
-                  SizedBox(width: 8),
-                  Text(
-                    "Billing & Subscriptions",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                const Row(
+                  children: [
+                    Icon(Icons.receipt_long,
+                        size: 30, color: Color(0xFF009daa)),
+                    SizedBox(width: 8),
+                    Text(
+                      "Billing & Subscriptions",
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Subscription Plans
+                SubscriptionCard(
+                  title: "Basic",
+                  status: statusFor("Basic"),
+                  price: 29.99,
+                  onActivated: _refresh,
+                  userid: userId!,
+                ),
+                SubscriptionCard(
+                  title: "Premium",
+                  status: statusFor("Premium"),
+                  price: 49.99,
+                  onActivated: _refresh,
+                  userid: userId!,
+                ),
+                SubscriptionCard(
+                  title: "Enterprise",
+                  status: statusFor("Enterprise"),
+                  price: 99.99,
+                  onActivated: _refresh,
+                  userid: userId!,
+                ),
+
+                const SizedBox(height: 24),
+
+                // 🔹 Plan Benefits
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Basic card
-              SubscriptionCard(
-                title: "Basic",
-                status: statusFor("Basic"),
-                price: 29.99,
-                onActivated: _refresh,
-                userid: userId!,
-              ),
-
-              // Premium card
-              SubscriptionCard(
-                title: "Premium",
-                status: statusFor("Premium"),
-                price: 49.99,
-                onActivated: _refresh,
-                userid: userId!,
-              ),
-
-              // Enterprise card
-              SubscriptionCard(
-                title: "Enterprise",
-                status: statusFor("Enterprise"),
-                price: 99.99,
-                onActivated: _refresh,
-                userid: userId!,
-              ),
-
-              const SizedBox(height: 16),
-
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(Icons.signal_cellular_4_bar),
-                          Text(
-                            "Linked Smart Cards",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "View 2 linked card(s)",
-                        style:
-                            TextStyle(fontSize: 20, color: Color(0xFF009daa)),
-                      ),
-                      const SizedBox(height: 20),
-                      CustomButton(
-                        text: "Add New Card",
-                        onPressed: () => {},
-                        color: const Color(0xFF009daa),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Card(
-                elevation: 8,
-                shadowColor: Colors.amberAccent.withOpacity(0.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                color: Colors.amber.shade100,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(Icons.qr_code, color: Colors.black87, size: 30),
-                          Text(
-                            "Quick Charge Activation",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Tap or scan to start your charging session instantly.",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black54,
-                          height: 1.4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Plan Benefits",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.bolt, color: Colors.white),
-                          label: const Text(
-                            "Activate Charging Session",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber.shade800,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            elevation: 5,
-                          ),
-                        ),
-                      ),
-                    ],
+                        const SizedBox(height: 12),
+                        _benefitRow("Free monthly charging sessions"),
+                        _benefitRow("Priority customer support"),
+                        _benefitRow("Faster charging access"),
+                        _benefitRow("Discounted extra usage"),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ]),
+
+                const SizedBox(height: 20),
+
+                // 🔹 Billing Summary
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Billing Summary",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 12),
+                        _summaryRow(
+                            "Current Plan", subscription?.planName ?? "None"),
+                        _summaryRow(
+                            "Monthly Fee",
+                            subscription != null
+                                ? "\$${subscription.monthlyFeee}"
+                                : "-"),
+                        _summaryRow(
+                            "Payment Status",
+                            subscription?.active == true
+                                ? "Active"
+                                : "Inactive"),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _benefitRow(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle, color: Colors.green, size: 20),
+          SizedBox(width: 8),
+          Expanded(child: Text(text)),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }

@@ -23,12 +23,25 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Charger Details"),
+        backgroundColor: Colors.white,
+        elevation: 4,
+        shadowColor: const Color(0xFF009daa).withOpacity(0.25),
+        centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context, true),
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: Color(0xFF009daa),
+            size: 20,
+          ),
+        ),
+        title: const Text(
+          "Charger Details",
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
           ),
         ),
       ),

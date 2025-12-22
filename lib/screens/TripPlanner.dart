@@ -393,32 +393,100 @@ class StationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 8,
-      borderRadius: BorderRadius.circular(14),
+      color: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.10),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // 🔹 Header
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.ev_station, color: Color(0xFF009daa)),
-                const SizedBox(width: 8),
-                Expanded(child: Text(station['name'] ?? "Station")),
-                IconButton(onPressed: onClose, icon: const Icon(Icons.close)),
+                // Icon badge
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF009daa).withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.ev_station,
+                    color: Color(0xFF009daa),
+                    size: 26,
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                // Station name
+                Expanded(
+                  child: Text(
+                    station['name'] ?? "Station",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // Close button
+                InkWell(
+                  onTap: onClose,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, size: 18),
+                  ),
+                ),
               ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'screen/Charger',
-                    arguments: station['name']);
-              },
-              child: const Text("Navigate"),
-            )
+
+            const SizedBox(height: 16),
+
+            // 🔹 Action button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    'screen/Charger',
+                    arguments: station['name'],
+                  );
+                },
+                icon: const Icon(Icons.search),
+                label: const Text(
+                  "Find Chargers",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF009daa),
+                  foregroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:electric_app/screens/BillScreen.dart';
 import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/HomeScreen.dart';
 import 'package:electric_app/screens/ProfileScreen.dart';
+import 'package:electric_app/screens/StationScreen.dart';
 import 'package:electric_app/screens/TripPlanner.dart';
 
 import 'package:flutter/material.dart';
@@ -16,10 +17,11 @@ class Bottomnavbar extends StatefulWidget {
 class _HomeScreenState extends State<Bottomnavbar> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-    Homescreen(),
+    const Homescreen(),
     const TripPlanner(),
     const Billscreen(),
-    const Chargerscreen()
+    const Stationscreen(),
+    const Profilescreen(),
   ];
 
   void _onTap(int idx) {
@@ -123,12 +125,12 @@ class _HomeScreenState extends State<Bottomnavbar> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _navItem(Icons.map_outlined, "Map", 1),
-                  _navItem(Icons.ev_station_outlined, "Charge", 2),
+                  _navItem(Icons.subscriptions_outlined, "Charge", 2),
 
                   const SizedBox(width: 56), // space for center button
 
-                  _navItem(Icons.account_balance_wallet_outlined, "E-Pouch", 3),
-                  _navItem(Icons.more_horiz, "More", 4),
+                  _navItem(Icons.ev_station_outlined, "E-Pouch", 3),
+                  _navItem(Icons.settings_outlined, "Setting", 4),
                 ],
               ),
             ),
