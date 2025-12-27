@@ -62,10 +62,26 @@ class UserService {
 
       return data.map((e) {
         print("USER JSON: $e");
-        return User.fromJson(e); // 👈 CRASH HERE
+        return User.fromJson(e);
       }).toList();
     } else {
       throw Exception("Failed to load users");
+    }
+  }
+
+  Future<User> getuserId(String? userId) async {
+    final url = Uri.parse("http://34.14.149.31:8083/api/users/$userId");
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return User.fromJson(data);
+    } else {
+      throw Exception("Faild to load");
     }
   }
 
