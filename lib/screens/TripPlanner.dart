@@ -110,7 +110,6 @@ class _TripPlannerState extends State<TripPlanner> {
     );
   }
 
-  // ---------------- PLAN ROUTE ----------------
   Future<void> planTrip() async {
     if (startLat == null || endLat == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +195,6 @@ class _TripPlannerState extends State<TripPlanner> {
     );
   }
 
-  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,7 +212,6 @@ class _TripPlannerState extends State<TripPlanner> {
             zoomControlsEnabled: false,
           ),
 
-          // 🔍 CITY SEARCH
           Positioned(
             top: 35,
             left: 16,
@@ -238,7 +235,6 @@ class _TripPlannerState extends State<TripPlanner> {
             ),
           ),
 
-          // 🚗 ROUTE BUTTON
           Positioned(
             right: 16,
             bottom: 120,
@@ -265,7 +261,6 @@ class _TripPlannerState extends State<TripPlanner> {
     );
   }
 
-  // ---------------- ROUTE POPUP ----------------
   void _openRoutePopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -379,7 +374,6 @@ class _TripPlannerState extends State<TripPlanner> {
   }
 }
 
-// ---------------- STATION CARD ----------------
 class StationCard extends StatelessWidget {
   final Map<String, dynamic> station;
   final VoidCallback onClose;

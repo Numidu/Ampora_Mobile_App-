@@ -1,5 +1,4 @@
 import 'package:electric_app/screens/BillScreen.dart';
-import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/HomeScreen.dart';
 import 'package:electric_app/screens/ProfileScreen.dart';
 import 'package:electric_app/screens/StationScreen.dart';

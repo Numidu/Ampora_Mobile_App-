@@ -1,5 +1,6 @@
 import 'package:electric_app/models/chargersession.dart';
 import 'package:electric_app/service/chargersession_service.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 
 class ChargerDetailsScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
         future: service.getAllSessions(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LogoLoader());
           }
 
           final allSessions = snapshot.data!;

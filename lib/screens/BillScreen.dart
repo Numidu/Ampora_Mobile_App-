@@ -1,8 +1,8 @@
 // screens/BillScreen.dart
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/subscription_service.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:electric_app/widget/SubscriptionCard.dart';
-import 'package:electric_app/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/models/subscription.dart';
 import 'package:provider/provider.dart%20';
@@ -55,7 +55,10 @@ class _BillscreenState extends State<Billscreen> {
       future: _subscriptionsFuture,
       builder: (BuildContext context, AsyncSnapshot<Subscription?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: LogoLoader(
+            size: 70,
+          ));
         }
 
         // Always render the plan UI. If snapshot has an error or null data, show plans as "Inactive".

@@ -1,4 +1,5 @@
 import 'package:electric_app/service/station_service.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:electric_app/widget/StationCard.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class _StationscreenState extends State<Stationscreen> {
                 future: _stationservice.fetchStations(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: LogoLoader());
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text(snapshot.error.toString()));

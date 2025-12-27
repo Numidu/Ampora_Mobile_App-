@@ -3,6 +3,7 @@ import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/provider/theme_provider.dart';
 import 'package:electric_app/service/user_service.dart';
 import 'package:electric_app/widget/Custom_Textfield.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -108,7 +109,7 @@ class _SettingscreenState extends State<Settingscreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
               child: _loaded
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: LogoLoader())
                   : Form(
                       key: _formKey,
                       child: Column(

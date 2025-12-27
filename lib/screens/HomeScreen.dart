@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:electric_app/provider/authj_provider.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/service/vehicle_service.dart';
 import 'package:provider/provider.dart%20';
@@ -313,7 +314,7 @@ class _HomescreenState extends State<Homescreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 40),
-                    child: Center(child: CircularProgressIndicator()));
+                    child: Center(child: LogoLoader()));
               }
               if (snapshot.hasError) {
                 return Padding(

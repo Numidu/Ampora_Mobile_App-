@@ -1,5 +1,6 @@
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/user_service.dart';
+import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart%20';
 
@@ -20,7 +21,6 @@ class _LoginState extends State<Login> {
 
   final UserService userservice = UserService();
 
-  /// 🔔 ERROR DIALOG (NEW – UI change wenne næ)
   void showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
         _userController.text.trim(),
         _passwordController.text.trim(),
       );
-      print('token is ${token}');
+
       if (token == null) {
         setState(() => loading = false);
         showErrorDialog("Invalid email or password");
@@ -55,12 +55,11 @@ class _LoginState extends State<Login> {
       }
 
       final email = userservice.getEmailFromToken(token);
-      print(email);
+
       final users = await userservice.getAllUsers(token);
-      print(users);
+
       final currentUser = userservice.findUserByEmail(users, email);
 
-      // ✅ SAVE TO PROVIDER
       context.read<AuthProvider>().setAuthData(
             token: token,
             user: currentUser,
@@ -68,7 +67,6 @@ class _LoginState extends State<Login> {
 
       setState(() => loading = false);
 
-      // ✅ SIMPLE NAVIGATION
       Navigator.pushReplacementNamed(context, 'screens/Home');
     } catch (e) {
       setState(() => loading = false);
@@ -91,8 +89,6 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-
-              /// 🔷 APP NAME (UNCHANGED)
               const Center(
                 child: Column(
                   children: [
@@ -116,27 +112,19 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              /// IMAGE (UNCHANGED)
               Center(
                 child: Image.asset(
                   "images/ev_login.png",
                   height: 220,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 "Login",
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 30),
-
-              /// 📝 FORM (UI same, validation added)
               Form(
                 key: _formKey,
                 child: Column(
@@ -218,8 +206,8 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         child: loading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
+                            ? const LogoLoader(
+                                size: 70,
                               )
                             : const Text(
                                 "Login",
