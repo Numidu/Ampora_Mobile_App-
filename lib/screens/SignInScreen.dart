@@ -17,6 +17,7 @@ class _SigninscreenState extends State<Signinscreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final useservice = UserService();
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> registerUser() async {
     String name = _nameController.text.trim();
@@ -116,218 +117,222 @@ class _SigninscreenState extends State<Signinscreen> {
         thumbVisibility: true,
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          child: Column(
-            children: [
-              // 🌊 Gradient Circle Background Illustration
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 150,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF009daa).withOpacity(0.5),
-                          const Color(0xFF00c4b4).withOpacity(0.3),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.person_outline,
-                    size: 80,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
                     color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Center(
-                      child: Text(
-                        'Welcome Back 👋',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF009daa),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          'Welcome Back 👋',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF009daa),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Center(
-                      child: Text(
-                        'Login to continue your journey',
+                      const SizedBox(height: 8),
+                      const Center(
+                        child: Text(
+                          'Login to continue your journey',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Full Name',
                         style: TextStyle(
-                          color: Colors.black54,
                           fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Full Name',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 8),
+                      // Name TextField
+                      TextFormField(
+                        controller: _nameController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF009daa)),
+                          filled: true,
+                          fillColor: const Color(0xFFf6f9fc),
+                          hintText: 'Numidu Dulanga',
+                          hintStyle: const TextStyle(color: Colors.black38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Name required' : null,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Password TextField
-                    TextField(
-                      controller: _nameController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF009daa)),
-                        filled: true,
-                        fillColor: const Color(0xFFf6f9fc),
-                        hintText: 'Numidu Dulanga',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                      const SizedBox(height: 20),
+                      // Email Label
+                      const Text(
+                        'Email Address',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Email Label
-                    const Text(
-                      'Email Address',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                    // Email TextField
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF009daa)),
-                        filled: true,
-                        fillColor: const Color(0xFFf6f9fc),
-                        hintText: 'you@example.com',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                      // Email TextField
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF009daa)),
+                          filled: true,
+                          fillColor: const Color(0xFFf6f9fc),
+                          hintText: 'you@example.com',
+                          hintStyle: const TextStyle(color: Colors.black38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Email required';
+                          if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(v)) {
+                            return 'Invalid email';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    // Password Label
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Password TextField
-                    TextField(
-                      controller: _passwordController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF009daa)),
-                        filled: true,
-                        fillColor: const Color(0xFFf6f9fc),
-                        hintText: 'Ndd@12345',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                      // Password Label
+                      const Text(
+                        'Password',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Confirm Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 8),
+                      // Password TextField
+                      TextFormField(
+                        controller: _passwordController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF009daa)),
+                          filled: true,
+                          fillColor: const Color(0xFFf6f9fc),
+                          hintText: 'Ndd@12345',
+                          hintStyle: const TextStyle(color: Colors.black38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.length < 6)
+                            return 'Minimum 6 characters';
+                          return null;
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Password TextField
-                    TextField(
-                      controller: _confirmPasswordController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF009daa)),
-                        filled: true,
-                        fillColor: const Color(0xFFf6f9fc),
-                        hintText: 'Ndd@12345',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Confirm Password',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Phone Number',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 8),
+                      // Password TextField
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF009daa)),
+                          filled: true,
+                          fillColor: const Color(0xFFf6f9fc),
+                          hintText: 'Ndd@12345',
+                          hintStyle: const TextStyle(color: Colors.black38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v != _passwordController.text)
+                            return 'Passwords do not match';
+                          return null;
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Password TextField
-                    TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Color(0xFF009daa)),
-                        filled: true,
-                        fillColor: const Color(0xFFf6f9fc),
-                        hintText: '0710805748',
-                        hintStyle: const TextStyle(color: Colors.black38),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Phone Number',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    CustomButton(
-                        text: "Save",
-                        onPressed: registerUser,
-                        color: const Color(0xFF009daa))
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(height: 8),
+                      // Password TextField
+                      TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF009daa)),
+                          filled: true,
+                          fillColor: const Color(0xFFf6f9fc),
+                          hintText: '0710805748',
+                          hintStyle: const TextStyle(color: Colors.black38),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (v) {
+                          if (!RegExp(r'^(07[0-9]{8})$').hasMatch(v ?? ''))
+                            return 'Invalid phone';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                      CustomButton(
+                          text: "Save",
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              registerUser();
+                            }
+                          },
+                          color: const Color(0xFF009daa))
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

@@ -48,6 +48,17 @@ class _ProfilescreenState extends State<Profilescreen> {
     }
   }
 
+  void logout(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+
+    auth.logout();
+
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      'screens/Login',
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,7 +210,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      onPressed: () {},
+                      onPressed: () => logout(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Profilescreen.primaryBlue,
                         foregroundColor: Colors.white,

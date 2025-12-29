@@ -59,13 +59,6 @@ class _HomeScreenState extends State<Bottomnavbar> {
             ],
           ),
         ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context, true),
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-          ),
-        ),
         title: const Text(
           '⚡ Electric App',
           style: TextStyle(
