@@ -1,3 +1,4 @@
+import 'package:electric_app/models/booking.dart';
 import 'package:electric_app/models/charger.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

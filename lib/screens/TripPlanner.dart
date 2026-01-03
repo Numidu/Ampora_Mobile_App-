@@ -1,3 +1,4 @@
+import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/service/Station_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -197,6 +198,8 @@ class _TripPlannerState extends State<TripPlanner> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -212,40 +215,87 @@ class _TripPlannerState extends State<TripPlanner> {
             zoomControlsEnabled: false,
           ),
 
+          // Search Bar
           Positioned(
-            top: 35,
-            left: 16,
-            right: 16,
-            child: Material(
-              elevation: 3,
-              borderRadius: BorderRadius.circular(20),
-              clipBehavior: Clip.antiAlias,
+            top: 50,
+            left: 20,
+            right: 20,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.card(context),
+                borderRadius: BorderRadius.circular(20),
+                border: isDark
+                    ? Border.all(color: AppTheme.border(context), width: 1)
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
               child: TextField(
                 controller: citySearchCtrl,
                 onSubmitted: searchStationsByCity,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppTheme.text(context),
+                ),
                 textAlignVertical: TextAlignVertical.center,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Search city (Colombo, Kandy...)",
-                  prefixIcon: Icon(Icons.search),
+                  hintStyle: TextStyle(
+                    color: AppTheme.textSecondary(context).withOpacity(0.6),
+                    fontSize: 15,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppTheme.primaryGreen,
+                    size: 22,
+                  ),
                   isDense: true,
                   border: InputBorder.none,
-                  filled: true,
+                  filled: false,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
           ),
 
+          // Route Button
           Positioned(
-            right: 16,
-            bottom: 120,
-            child: FloatingActionButton(
-              backgroundColor: Colors.white,
-              onPressed: () => _openRoutePopup(context),
-              child: const Icon(Icons.route, color: Colors.black),
+            right: 20,
+            bottom: 140,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.primaryGreen,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryGreen.withOpacity(0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                onPressed: () => _openRoutePopup(context),
+                child: const Icon(
+                  Icons.route,
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
             ),
           ),
 
-          // 📍 STATION CARD
+          // STATION CARD
           if (selectedStation != null)
             Positioned(
               left: 12,
@@ -262,10 +312,12 @@ class _TripPlannerState extends State<TripPlanner> {
   }
 
   void _openRoutePopup(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // 🔥 for rounded container
+      backgroundColor: Colors.transparent,
       builder: (_) => Padding(
         padding: EdgeInsets.only(
           left: 16,
@@ -274,45 +326,76 @@ class _TripPlannerState extends State<TripPlanner> {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            color: AppTheme.card(context),
+            borderRadius: BorderRadius.circular(32),
+            border: isDark
+                ? Border.all(color: AppTheme.border(context), width: 1)
+                : null,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, -8),
+                color: Colors.black.withOpacity(isDark ? 0.5 : 0.12),
+                blurRadius: 30,
+                offset: const Offset(0, -10),
               ),
             ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
-              // 🔹 Drag handle
+              // Drag handle
               Container(
-                width: 40,
-                height: 4,
+                width: 50,
+                height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: AppTheme.border(context),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              const Text(
-                "Plan Your Route",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              // Icon Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.iconBg(context),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.route,
+                  color: AppTheme.primaryGreen,
+                  size: 32,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              Text(
+                "Plan Your Route",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.text(context),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                "Find the best charging stations along your way",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppTheme.textSecondary(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 32),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
                     PlacePickerField(
@@ -334,38 +417,41 @@ class _TripPlannerState extends State<TripPlanner> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
+              // Plan Trip Button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
+                  height: 54,
+                  child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
                       planTrip();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFF009DAA), // your app color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
+                    icon: const Icon(Icons.navigation, size: 22),
+                    label: const Text(
                       "Plan Trip",
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryGreen,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -392,7 +478,7 @@ class StationCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.background(context),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
