@@ -1,3 +1,4 @@
+import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/service/subscription_service.dart';
 import 'package:flutter/material.dart';
 
@@ -47,6 +48,7 @@ class SubscriptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isActive = status == "Activated";
     final planColor = getPlanColor();
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       borderRadius: BorderRadius.circular(22),
@@ -56,6 +58,7 @@ class SubscriptionCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
+          color: dark && !isActive ? const Color(0xFF1A1F2E) : null,
           gradient: isActive
               ? LinearGradient(
                   colors: [
@@ -65,14 +68,14 @@ class SubscriptionCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
-              : const LinearGradient(
-                  colors: [Colors.white, Colors.white],
-                ),
+              : null,
           boxShadow: [
             BoxShadow(
-              color: isActive
-                  ? planColor.withOpacity(0.35)
-                  : Colors.black.withOpacity(0.08),
+              color: dark
+                  ? Colors.black.withOpacity(0.6)
+                  : (isActive
+                      ? planColor.withOpacity(0.35)
+                      : Colors.black.withOpacity(0.08)),
               blurRadius: 18,
               offset: const Offset(0, 8),
             ),
@@ -87,12 +90,13 @@ class SubscriptionCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isActive
                     ? Colors.white.withOpacity(0.2)
-                    : planColor.withOpacity(0.15),
+                    : planColor.withOpacity(dark ? 0.25 : 0.15),
               ),
               child: Icon(
                 getPlanIcon(),
                 size: 30,
-                color: isActive ? Colors.white : planColor,
+                color:
+                    isActive ? Colors.white : (dark ? Colors.white : planColor),
               ),
             ),
 
@@ -108,7 +112,9 @@ class SubscriptionCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: isActive ? Colors.white : Colors.black,
+                      color: isActive
+                          ? Colors.white
+                          : (dark ? Colors.white : Colors.black),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -116,7 +122,11 @@ class SubscriptionCard extends StatelessWidget {
                     "\$${price.toStringAsFixed(2)} / month",
                     style: TextStyle(
                       fontSize: 14,
-                      color: isActive ? Colors.white70 : Colors.grey.shade700,
+                      color: isActive
+                          ? Colors.white70
+                          : (dark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700),
                     ),
                   ),
                 ],
@@ -157,7 +167,7 @@ class SubscriptionCard extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.background(outerContext),
       builder: (bottomSheetContext) {
         String description;
         switch (title) {

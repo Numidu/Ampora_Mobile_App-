@@ -1,39 +1,37 @@
+import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/screens/BillScreen.dart';
 import 'package:electric_app/screens/HomeScreen.dart';
 import 'package:electric_app/screens/ProfileScreen.dart';
 import 'package:electric_app/screens/StationScreen.dart';
 import 'package:electric_app/screens/TripPlanner.dart';
-
 import 'package:flutter/material.dart';
 
 class Bottomnavbar extends StatefulWidget {
   const Bottomnavbar({Key? key}) : super(key: key);
 
   @override
-  State<Bottomnavbar> createState() => _HomeScreenState();
+  State<Bottomnavbar> createState() => _BottomnavbarState();
 }
 
-class _HomeScreenState extends State<Bottomnavbar> {
+class _BottomnavbarState extends State<Bottomnavbar> {
   int _selectedIndex = 0;
-  final List<Widget> _screens = [
-    const Homescreen(),
-    const TripPlanner(),
-    const Billscreen(),
-    const Stationscreen(),
-    const Profilescreen(),
+
+  final List<Widget> _screens = const [
+    Homescreen(),
+    TripPlanner(),
+    Billscreen(),
+    Stationscreen(),
+    Profilescreen(),
   ];
 
-  void _onTap(int idx) {
-    setState(() {
-      _selectedIndex = idx;
-    });
-  }
+  void _onTap(int idx) => setState(() => _selectedIndex = idx);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background(context),
       appBar: AppBar(
-        elevation: 6,
+        elevation: 0,
         backgroundColor: Colors.transparent,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -50,13 +48,6 @@ class _HomeScreenState extends State<Bottomnavbar> {
               bottomLeft: Radius.circular(25),
               bottomRight: Radius.circular(25),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 6,
-                offset: Offset(0, 3),
-              ),
-            ],
           ),
         ),
         title: const Text(
@@ -69,27 +60,12 @@ class _HomeScreenState extends State<Bottomnavbar> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none_rounded,
-              color: Colors.white,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: GestureDetector(
-              onTap: () {
-                // Handle profile tap
-              },
-              child: const CircleAvatar(
-                radius: 18,
-                backgroundImage: AssetImage('images/profile.jpg'),
-                backgroundColor: Colors.white,
-              ),
-            ),
-          ),
+        actions: const [
+          Icon(Icons.notifications_none_rounded, color: Colors.white),
+          SizedBox(width: 12),
+          CircleAvatar(
+              radius: 18, backgroundImage: AssetImage('images/profile.jpg')),
+          SizedBox(width: 12),
         ],
       ),
       body: SafeArea(child: _screens[_selectedIndex]),
@@ -97,17 +73,19 @@ class _HomeScreenState extends State<Bottomnavbar> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            // Pill background
+            // Pill Bar
             Container(
               height: 64,
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.card(context),
                 borderRadius: BorderRadius.circular(40),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.black.withOpacity(0.5)
+                        : Colors.black.withOpacity(0.12),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -118,9 +96,7 @@ class _HomeScreenState extends State<Bottomnavbar> {
                 children: [
                   _navItem(Icons.map_outlined, "Map", 1),
                   _navItem(Icons.subscriptions_outlined, "Charge", 2),
-
-                  const SizedBox(width: 56), // space for center button
-
+                  const SizedBox(width: 56),
                   _navItem(Icons.ev_station_outlined, "E-Pouch", 3),
                   _navItem(Icons.settings_outlined, "Setting", 4),
                 ],
@@ -136,21 +112,18 @@ class _HomeScreenState extends State<Bottomnavbar> {
                   height: 56,
                   width: 56,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: AppTheme.primaryGreen,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.25),
+                        color: AppTheme.primaryGreen.withOpacity(0.35),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.home_rounded,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  child: const Icon(Icons.home_rounded,
+                      color: Colors.white, size: 28),
                 ),
               ),
             ),
@@ -161,31 +134,27 @@ class _HomeScreenState extends State<Bottomnavbar> {
   }
 
   Widget _navItem(IconData icon, String label, int index) {
-    final bool selected = _selectedIndex == index;
+    final selected = _selectedIndex == index;
 
     return GestureDetector(
       onTap: () => _onTap(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 22,
-            color: selected
-                ? Theme.of(context).primaryColor
-                : Colors.grey.shade500,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+          Icon(icon,
+              size: 22,
               color: selected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.shade500,
-            ),
-          ),
+                  ? AppTheme.primaryGreen
+                  : AppTheme.textSecondary(context)),
+          const SizedBox(height: 4),
+          Text(label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: selected
+                    ? AppTheme.primaryGreen
+                    : AppTheme.textSecondary(context),
+              )),
         ],
       ),
     );

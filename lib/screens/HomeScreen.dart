@@ -3,8 +3,9 @@ import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/service/vehicle_service.dart';
-import 'package:provider/provider.dart%20';
-import '../models/vehicle.dart';
+import 'package:provider/provider.dart';
+import 'package:electric_app/models/vehicle.dart';
+import 'package:electric_app/models/colorThem.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -64,439 +65,652 @@ class _HomescreenState extends State<Homescreen> {
     super.dispose();
   }
 
+  // Theme-aware colors
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final user = context.read<AuthProvider>().currentUser;
-    userId = user?.userId;
-    print(user?.userId);
-    return RefreshIndicator(
-      onRefresh: _refresh,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(height: 6),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-          // Header
-          const Text("Welcome Back!",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text("Manage your electric vehicles",
-              style: TextStyle(fontSize: 15, color: Colors.grey[600])),
+    return Scaffold(
+      backgroundColor: AppTheme.background(context),
+      body: RefreshIndicator(
+        color: const Color(0xFF00C896),
+        backgroundColor: AppTheme.card(context),
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SizedBox(height: 6),
 
-          SizedBox(height: screenHeight * 0.03),
+            // Header
+            Text(
+              "Welcome Back!",
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.text(context),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "Manage your electric vehicles",
+              style: TextStyle(
+                fontSize: 15,
+                color: AppTheme.textSecondary(context),
+              ),
+            ),
 
-          // Carousel
-          CarouselSlider.builder(
-            itemCount: images.length,
-            itemBuilder: (context, index, realIdx) {
-              final imagePath = images[index];
-              return GestureDetector(
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Slide ${index + 1} tapped'))),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 10,
-                          offset: const Offset(0, 6))
-                    ],
-                    image: DecorationImage(
-                        image: AssetImage(imagePath), fit: BoxFit.cover),
+            SizedBox(height: screenHeight * 0.03),
+
+            // Carousel
+            CarouselSlider.builder(
+              itemCount: images.length,
+              itemBuilder: (context, index, realIdx) {
+                final imagePath = images[index];
+                return GestureDetector(
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Slide ${index + 1} tapped'),
+                      backgroundColor: const Color(0xFF00C896),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                   child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
+                        )
+                      ],
+                      image: DecorationImage(
+                        image: AssetImage(imagePath),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        gradient: LinearGradient(
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.22)
+                            Colors.black.withOpacity(0.5)
                           ],
                           begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter),
-                    ),
-                    alignment: Alignment.bottomLeft,
-                    padding: const EdgeInsets.all(14),
-                    child: const Text('Featured',
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                      alignment: Alignment.bottomLeft,
+                      padding: const EdgeInsets.all(20),
+                      child: const Text(
+                        'Featured',
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
-            options: CarouselOptions(
-              height: 180,
-              autoPlay: true,
-              enlargeCenterPage: true,
-              viewportFraction: 0.9,
-              onPageChanged: (i, _) => setState(() => _carouselIndex = i),
+                );
+              },
+              options: CarouselOptions(
+                height: 200,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                viewportFraction: 0.9,
+                onPageChanged: (i, _) => setState(() => _carouselIndex = i),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 8),
-          // Dots
-          Row(
+            const SizedBox(height: 12),
+            // Dots
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(images.length, (i) {
                 final active = i == _carouselIndex;
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 240),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: active ? 20 : 8,
+                  width: active ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                      color:
-                          active ? Colors.green.shade700 : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(8)),
+                    color: active
+                        ? const Color(0xFF00C896)
+                        : AppTheme.border(context),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 );
-              })),
-
-          SizedBox(height: screenHeight * 0.03),
-
-          // Charge Points Card (simple)
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-              border: Border.all(
-                color: Colors.grey.shade200,
-              ),
+              }),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // Icon box
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child:
-                        Icon(Icons.bolt, color: Colors.grey.shade700, size: 28),
-                  ),
 
-                  const SizedBox(width: 14),
+            SizedBox(height: screenHeight * 0.03),
 
-                  // Text block
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Charge Points",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          "0.00",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Add button
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Add points')),
-                      );
-                    },
-                    child:
-                        Icon(Icons.add, color: Colors.grey.shade700, size: 26),
+            // Charge Points Card
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.card(context),
+                borderRadius: BorderRadius.circular(24),
+                border: isDark
+                    ? Border.all(color: AppTheme.border(context), width: 1)
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    // Icon box
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.iconBg(context),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.bolt,
+                        color: Color(0xFF00C896),
+                        size: 32,
+                      ),
+                    ),
+
+                    const SizedBox(width: 16),
+
+                    // Text block
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Charge Points",
+                            style: TextStyle(
+                              color: AppTheme.textSecondary(context),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "0.00",
+                            style: TextStyle(
+                              color: AppTheme.text(context),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Add button
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00C896),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF00C896).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Add points'),
+                              backgroundColor: const Color(0xFF00C896),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add,
+                            color: Colors.white, size: 24),
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
 
-          SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: screenHeight * 0.03),
 
-          // Search + quick add
-          Row(children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12)),
-                child: Row(children: [
-                  const Icon(Icons.search, color: Colors.grey),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                          hintText: "Search vehicles",
-                          border: InputBorder.none),
-                      onChanged: (s) => setState(() => _search = s),
+            // Search + quick add
+            Row(children: [
+              Expanded(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.searchField(context),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.border(context),
+                      width: 1.5,
                     ),
                   ),
-                  if (_search.isNotEmpty)
-                    IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() => _search = "");
-                      },
-                      icon: const Icon(Icons.close, size: 18),
-                    )
-                ]),
-              ),
-            ),
-            const SizedBox(width: 12),
-            InkWell(
-              onTap: () => Navigator.pushNamed(context, 'screens/AddVehicle'),
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color: Colors.green.shade400,
-                    borderRadius: BorderRadius.circular(12)),
-                child: const Column(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.add, color: Colors.white),
-                  SizedBox(height: 4),
-                  Text("Add",
-                      style: TextStyle(color: Colors.white, fontSize: 12))
-                ]),
-              ),
-            ),
-          ]),
-
-          SizedBox(height: screenHeight * 0.02),
-
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("My Vehicles",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            TextButton.icon(
-              onPressed: () => ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Filter tapped'))),
-              icon: const Icon(Icons.filter_list, size: 18),
-              label: const Text("Filter"),
-              style:
-                  TextButton.styleFrom(foregroundColor: Colors.green.shade700),
-            ),
-          ]),
-
-          const SizedBox(height: 8),
-
-          FutureBuilder<List<Vehicle>>(
-            future: _vehiclesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40),
-                    child: Center(child: LogoLoader()));
-              }
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(children: [
-                    Icon(Icons.error_outline,
-                        size: 60, color: Colors.red.shade300),
-                    const SizedBox(height: 12),
-                    Text('Error: ${snapshot.error}',
-                        style: TextStyle(color: Colors.grey[600]))
-                  ]),
-                );
-              }
-              final vehicles = snapshot.data ?? [];
-              final filtered = _search.isEmpty
-                  ? vehicles
-                  : vehicles
-                      .where((v) => (v.model)
-                          .toLowerCase()
-                          .contains(_search.toLowerCase()))
-                      .toList();
-
-              if (filtered.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 40),
-                  child: Column(children: [
-                    Icon(Icons.car_rental,
-                        size: 80, color: Colors.grey.shade300),
-                    const SizedBox(height: 16),
-                    const Text('No vehicles found',
+                  child: Row(children: [
+                    Icon(
+                      Icons.search,
+                      color: AppTheme.textSecondary(context),
+                      size: 22,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
-                    Text('Add your first vehicle to get started',
-                        style: TextStyle(color: Colors.grey[600])),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
+                          fontSize: 15,
+                          color: AppTheme.text(context),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "Search vehicles",
+                          hintStyle: TextStyle(
+                            color: AppTheme.textSecondary(context)
+                                .withOpacity(0.6),
+                            fontSize: 15,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onChanged: (s) => setState(() => _search = s),
+                      ),
+                    ),
+                    if (_search.isNotEmpty)
+                      IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _search = "");
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          size: 20,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      )
+                  ]),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C896),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00C896).withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () =>
+                      Navigator.pushNamed(context, 'screens/AddVehicle'),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: Colors.white, size: 22),
+                        SizedBox(width: 6),
+                        Text(
+                          "Add",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ]),
+
+            SizedBox(height: screenHeight * 0.025),
+
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text(
+                "My Vehicles",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.text(context),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Filter tapped'),
+                    backgroundColor: const Color(0xFF00C896),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.filter_list, size: 20),
+                label: const Text(
+                  "Filter",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF00C896),
+                ),
+              ),
+            ]),
+
+            const SizedBox(height: 12),
+
+            FutureBuilder<List<Vehicle>>(
+              future: _vehiclesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 60),
+                    child: Center(child: LogoLoader()),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: const Color(0xFFFF6B6B).withOpacity(0.6),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error: ${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 15,
+                        ),
+                      ),
+                    ]),
+                  );
+                }
+                final vehicles = snapshot.data ?? [];
+                final filtered = _search.isEmpty
+                    ? vehicles
+                    : vehicles
+                        .where((v) => (v.model)
+                            .toLowerCase()
+                            .contains(_search.toLowerCase()))
+                        .toList();
+
+                if (filtered.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 60),
+                    child: Column(children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppTheme.iconBg(context),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.directions_car_outlined,
+                          size: 64,
+                          color: Color(0xFF00C896),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'No vehicles found',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.text(context),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Add your first vehicle to get started',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
                         onPressed: () =>
                             Navigator.pushNamed(context, 'screens/AddVehicle'),
-                        child: const Text("Add Vehicle"))
-                  ]),
+                        icon: const Icon(Icons.add, size: 20),
+                        label: const Text('Add Vehicle'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00C896),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                    ]),
+                  );
+                }
+
+                // responsive columns
+                final crossAxisCount =
+                    MediaQuery.of(context).size.width > 600 ? 3 : 2;
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filtered.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    childAspectRatio: 0.67,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                  ),
+                  itemBuilder: (context, index) =>
+                      _buildVehicleCard(context, filtered[index]),
                 );
-              }
+              },
+            ),
 
-              // responsive columns
-              final crossAxisCount =
-                  MediaQuery.of(context).size.width > 600 ? 3 : 2;
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filtered.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: 0.85,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemBuilder: (context, index) =>
-                    _buildVehicleCard(context, filtered[index]),
-              );
-            },
-          ),
-
-          const SizedBox(height: 24),
-        ]),
+            const SizedBox(height: 30),
+          ]),
+        ),
       ),
     );
   }
 
-  // ---------- Improved vehicle card (uses your model fields) ----------
   Widget _buildVehicleCard(BuildContext context, Vehicle v) {
-    // Use batteryCapacity & efficiency (no currentCharge available in model)
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final capacityLabel = '${v.batteryCapacity.toStringAsFixed(1)} kWh';
-    final efficiencyLabel = '${v.efficiency.toStringAsFixed(1)} kWh';
+    final efficiencyLabel = '${v.efficiency.toStringAsFixed(1)} km/kWh';
 
     final connector = v.connectorType.toUpperCase();
     final connectorColor =
         connector.contains('CCS') || connector.contains('TYPE')
-            ? Colors.green.shade700
-            : Colors.orange.shade700;
+            ? const Color(0xFF00C896)
+            : const Color(0xFFFF9800);
 
     return InkWell(
       onTap: () => _showVehicleDetails(context, v),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: AppTheme.card(context),
+          borderRadius: BorderRadius.circular(20),
+          border: isDark
+              ? Border.all(color: AppTheme.border(context), width: 1)
+              : null,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 6))
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            )
           ],
         ),
-        // Important: use MainAxisSize.min so Column doesn't expand beyond content
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // icon circle with hero (fixed size)
+            // icon circle
             Hero(
               tag: 'vehicle-${v.vehicleId}',
               child: Container(
                 width: 72,
                 height: 72,
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                    color: Colors.blue.shade50, shape: BoxShape.circle),
-                child: const Icon(Icons.ev_station,
-                    size: 40, color: Colors.black87),
+                  color: AppTheme.iconBg(context),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.ev_station,
+                  size: 36,
+                  color: Color(0xFF00C896),
+                ),
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   v.model,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.text(context),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // connector chip
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: connectorColor.withOpacity(isDark ? 0.25 : 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                v.connectorType,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: connectorColor,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
 
             const SizedBox(height: 8),
 
-            // connector chip + capacity (wrap in Row but keep compact)
+            // capacity
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: connectorColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Text(v.connectorType,
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: connectorColor,
-                          fontWeight: FontWeight.w600)),
+                const Icon(
+                  Icons.battery_charging_full,
+                  size: 16,
+                  color: Color(0xFF00C896),
                 ),
-                const SizedBox(width: 8),
-                Text(capacityLabel,
-                    style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(width: 6),
+                Text(
+                  capacityLabel,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                ),
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
+            // efficiency
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.bolt, size: 14, color: Colors.orange),
+                const Icon(
+                  Icons.speed,
+                  size: 16,
+                  color: Color(0xFF00C896),
+                ),
                 const SizedBox(width: 6),
-                Text(efficiencyLabel,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                Flexible(
+                  child: Text(
+                    efficiencyLabel,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ),
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             SizedBox(
               width: double.infinity,
-              height: 36,
-              child: OutlinedButton.icon(
+              height: 38,
+              child: OutlinedButton(
                 onPressed: () => _showVehicleDetails(context, v),
-                icon: const Icon(Icons.info_outline, size: 16),
-                label: const Text('Details'),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  side: const BorderSide(
+                    color: Color(0xFF00C896),
+                    width: 1.5,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  textStyle: const TextStyle(fontSize: 14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Details',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF00C896),
+                  ),
                 ),
               ),
             ),
@@ -507,69 +721,110 @@ class _HomescreenState extends State<Homescreen> {
   }
 
   void _showVehicleDetails(BuildContext context, Vehicle v) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) {
         return Container(
-          decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+          decoration: BoxDecoration(
+            color: AppTheme.card(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            border: isDark
+                ? Border.all(color: AppTheme.border(context), width: 1)
+                : null,
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                  width: 50,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10))),
-              const SizedBox(height: 14),
-              Hero(
-                  tag: 'vehicle-${v.vehicleId}',
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset('images/car1.jpeg',
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover))),
-              const SizedBox(height: 16),
-              Text(v.model,
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
+                width: 50,
+                height: 5,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.grey.shade50),
+                  color: AppTheme.border(context),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Hero(
+                tag: 'vehicle-${v.vehicleId}',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'images/car1.jpeg',
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                v.model,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.text(context),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: isDark
+                      ? const Color(0xFF252D3C)
+                      : const Color(0xFFF7FFFE),
+                ),
                 child: Column(children: [
                   _buildDetailRow(
-                      Icons.battery_charging_full,
-                      'Battery Capacity',
-                      '${v.batteryCapacity.toStringAsFixed(1)} kWh',
-                      Colors.blue),
-                  const Divider(height: 20),
-                  _buildDetailRow(Icons.bolt, 'Efficiency',
-                      '${v.efficiency.toStringAsFixed(1)} kWh', Colors.orange),
-                  const Divider(height: 20),
-                  _buildDetailRow(Icons.power, 'Connector Type',
-                      v.connectorType, Colors.green),
+                    context,
+                    Icons.battery_charging_full,
+                    'Battery Capacity',
+                    '${v.batteryCapacity.toStringAsFixed(1)} kWh',
+                    const Color(0xFF00C896),
+                  ),
+                  const Divider(height: 24),
+                  _buildDetailRow(
+                    context,
+                    Icons.speed,
+                    'Efficiency',
+                    '${v.efficiency.toStringAsFixed(1)} km/kWh',
+                    const Color(0xFF00C896),
+                  ),
+                  const Divider(height: 24),
+                  _buildDetailRow(
+                    context,
+                    Icons.power,
+                    'Connector Type',
+                    v.connectorType,
+                    const Color(0xFF00C896),
+                  ),
                 ]),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 20),
               Row(children: [
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade700,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12))),
-                    child: const Text('Close',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                      backgroundColor: const Color(0xFF00C896),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -577,16 +832,37 @@ class _HomescreenState extends State<Homescreen> {
                   onPressed: () {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('More actions')));
+                      SnackBar(
+                        content: const Text('More actions'),
+                        backgroundColor: const Color(0xFF00C896),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12))),
-                  child: const Text('More'),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(
+                      color: Color(0xFF00C896),
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'More',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Color(0xFF00C896),
+                    ),
+                  ),
                 ),
               ]),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
             ]),
           ),
         );
@@ -594,23 +870,44 @@ class _HomescreenState extends State<Homescreen> {
     );
   }
 
-  Widget _buildDetailRow(
-      IconData icon, String label, String value, Color color) {
+  Widget _buildDetailRow(BuildContext context, IconData icon, String label,
+      String value, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(children: [
       Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: color, size: 22)),
-      const SizedBox(width: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(isDark ? 0.25 : 0.15),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: color, size: 24),
+      ),
+      const SizedBox(width: 16),
       Expanded(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: TextStyle(color: Colors.grey[600])),
-        const SizedBox(height: 6),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w700))
-      ])),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: AppTheme.textSecondary(context),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppTheme.text(context),
+              ),
+            ),
+          ],
+        ),
+      ),
     ]);
   }
 }

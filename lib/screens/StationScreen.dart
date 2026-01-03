@@ -20,14 +20,29 @@ class _StationscreenState extends State<Stationscreen> {
         Padding(
           padding: const EdgeInsets.all(12),
           child: TextField(
-            onChanged: (value) {
-              setState(() => query = value);
-            },
+            onChanged: (value) => setState(() => query = value),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : const Color(0xFF1A2332),
+            ),
             decoration: InputDecoration(
               hintText: "Search stations...",
-              prefixIcon: const Icon(Icons.search),
+              hintStyle: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade400
+                    : Colors.grey.shade600,
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade400
+                    : Colors.grey.shade600,
+              ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1A1F2E)
+                  : Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,

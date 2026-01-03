@@ -1,8 +1,8 @@
+import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/models/user.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/provider/theme_provider.dart';
 import 'package:electric_app/service/user_service.dart';
-import 'package:electric_app/widget/Custom_Textfield.dart';
 import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -61,307 +61,288 @@ class _SettingscreenState extends State<Settingscreen> {
   void dispose() {
     _namecontroller.dispose();
     _emailcontroller.dispose();
-
+    _passwordcontroller.dispose();
+    _confirmpasswordcontroller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var screenheight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: AppTheme.background(context),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Settings',
           style: TextStyle(
-            color: Colors.white,
+            color: AppTheme.text(context),
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
         centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF009daa), Color(0xFF00c6d7)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        backgroundColor: AppTheme.background(context),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: AppTheme.text(context)),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.grey[50]!,
-              Colors.white,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
-              child: _loaded
-                  ? const Center(child: LogoLoader())
-                  : Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Profile Section Header
-                          _buildSectionHeader(
-                            icon: Icons.person_outline,
-                            title: "Profile Information",
-                            subtitle: "Update your personal details",
-                          ),
-                          SizedBox(height: screenheight * 0.025),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+            child: _loaded
+                ? const Center(child: LogoLoader())
+                : Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Profile Section Header
+                        _buildSectionHeader(
+                          icon: Icons.person_outline,
+                          title: "Profile Information",
+                          subtitle: "Update your personal details",
+                        ),
+                        SizedBox(height: screenheight * 0.025),
 
-                          // Profile Card
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              children: [
-                                CustomTextfield(
-                                  controller: _namecontroller,
-                                  hintTexts: "Enter your full name",
-                                  prefixIcons: const Icon(Icons.person_outline,
-                                      color: Color(0xFF009daa), size: 20),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your name';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: screenheight * 0.02),
-                                CustomTextfield(
-                                  controller: _emailcontroller,
-                                  hintTexts: "Enter your email address",
-                                  prefixIcons: const Icon(Icons.email_outlined,
-                                      color: Color(0xFF009daa), size: 20),
-                                  keyboardType: TextInputType.emailAddress,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your email';
-                                    }
-                                    if (!RegExp(
-                                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                        .hasMatch(value)) {
-                                      return 'Please enter a valid email';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: screenheight * 0.04),
-
-                          // Security Section Header
-                          _buildSectionHeader(
-                            icon: Icons.lock_outline,
-                            title: "Security",
-                            subtitle: "Change your password",
-                          ),
-                          SizedBox(height: screenheight * 0.025),
-
-                          // Security Card
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              children: [
-                                CustomTextfield(
-                                  controller: _passwordcontroller,
-                                  hintTexts: "Enter new password",
-                                  prefixIcons: const Icon(Icons.lock_outline,
-                                      color: Color(0xFF009daa), size: 20),
-                                  validator: (value) {
-                                    if (value != null &&
-                                        value.isNotEmpty &&
-                                        value.length < 6) {
-                                      return 'Password must be at least 6 characters';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: screenheight * 0.02),
-                                CustomTextfield(
-                                  controller: _confirmpasswordcontroller,
-                                  hintTexts: "Confirm new password",
-                                  prefixIcons: const Icon(Icons.lock_outline,
-                                      color: Color(0xFF009daa), size: 20),
-                                  validator: (value) {
-                                    if (_passwordcontroller.text.isNotEmpty &&
-                                        value != _passwordcontroller.text) {
-                                      return 'Passwords do not match';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: screenheight * 0.04),
-
-                          // Save Button
-                          Container(
-                            width: double.infinity,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF009daa), Color(0xFF00c6d7)],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
+                        // Profile Card
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.card(context),
+                            borderRadius: BorderRadius.circular(24),
+                            border: isDark
+                                ? Border.all(
+                                    color: AppTheme.border(context), width: 1)
+                                : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black
+                                    .withOpacity(isDark ? 0.3 : 0.06),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
                               ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xFF009daa).withOpacity(0.4),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // Handle save settings
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Row(
-                                        children: const [
-                                          Icon(Icons.check_circle,
-                                              color: Colors.white),
-                                          SizedBox(width: 12),
-                                          Text('Settings saved successfully!'),
-                                        ],
-                                      ),
-                                      backgroundColor: const Color(0xFF009daa),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      margin: const EdgeInsets.all(16),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(28),
+                          child: Column(
+                            children: [
+                              _buildTextField(
+                                controller: _namecontroller,
+                                hintText: "Enter your full name",
+                                icon: Icons.person_outline,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: screenheight * 0.02),
+                              _buildTextField(
+                                controller: _emailcontroller,
+                                hintText: "Enter your email address",
+                                icon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                      .hasMatch(value)) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: screenheight * 0.04),
+
+                        // Security Section Header
+                        _buildSectionHeader(
+                          icon: Icons.lock_outline,
+                          title: "Security",
+                          subtitle: "Change your password",
+                        ),
+                        SizedBox(height: screenheight * 0.025),
+
+                        // Security Card
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.card(context),
+                            borderRadius: BorderRadius.circular(24),
+                            border: isDark
+                                ? Border.all(
+                                    color: AppTheme.border(context), width: 1)
+                                : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black
+                                    .withOpacity(isDark ? 0.3 : 0.06),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(28),
+                          child: Column(
+                            children: [
+                              _buildTextField(
+                                controller: _passwordcontroller,
+                                hintText: "Enter new password",
+                                icon: Icons.lock_outline,
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value != null &&
+                                      value.isNotEmpty &&
+                                      value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: screenheight * 0.02),
+                              _buildTextField(
+                                controller: _confirmpasswordcontroller,
+                                hintText: "Confirm new password",
+                                icon: Icons.lock_outline,
+                                obscureText: true,
+                                validator: (value) {
+                                  if (_passwordcontroller.text.isNotEmpty &&
+                                      value != _passwordcontroller.text) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: screenheight * 0.04),
+
+                        // Save Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Row(
+                                      children: [
+                                        Icon(Icons.check_circle,
+                                            color: Colors.white),
+                                        SizedBox(width: 12),
+                                        Text('Settings saved successfully!'),
+                                      ],
                                     ),
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
+                                    backgroundColor: AppTheme.primaryGreen,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryGreen,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Text(
-                                'Save Changes',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
+                            ),
+                            child: const Text(
+                              'Save Changes',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ),
+                        ),
 
-                          SizedBox(height: screenheight * 0.04),
+                        SizedBox(height: screenheight * 0.04),
 
-                          // Appearance Section Header
-                          _buildSectionHeader(
-                            icon: Icons.palette_outlined,
-                            title: "Appearance",
-                            subtitle: "Customize your theme",
-                          ),
-                          SizedBox(height: screenheight * 0.025),
+                        // Appearance Section Header
+                        _buildSectionHeader(
+                          icon: Icons.palette_outlined,
+                          title: "Appearance",
+                          subtitle: "Customize your theme",
+                        ),
+                        SizedBox(height: screenheight * 0.025),
 
-                          // Theme Card
-                          Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
+                        // Theme Card
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.card(context),
+                            borderRadius: BorderRadius.circular(24),
+                            border: isDark
+                                ? Border.all(
+                                    color: AppTheme.border(context), width: 1)
+                                : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black
+                                    .withOpacity(isDark ? 0.3 : 0.06),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
                               ),
-                              child: Column(
-                                children: [
-                                  _buildThemeOption(
-                                    title: 'Light Theme',
-                                    subtitle: 'Bright and clean interface',
-                                    icon: Icons.light_mode_outlined,
-                                    value: 'Light',
-                                    onTap: () {
-                                      setState(() => _selectedTheme = 'Light');
-                                      context.read<ThemeProvider>().setLight();
-                                    },
-                                  ),
-                                  Divider(height: 1, color: Colors.grey[200]),
-                                  _buildThemeOption(
-                                    title: 'Dark Theme',
-                                    subtitle: 'Easy on the eyes',
-                                    icon: Icons.dark_mode_outlined,
-                                    value: 'Dark',
-                                    onTap: () {
-                                      setState(() => _selectedTheme = 'Dark');
-                                      context.read<ThemeProvider>().setDark();
-                                    },
-                                  ),
-                                  Divider(height: 1, color: Colors.grey[200]),
-                                  _buildThemeOption(
-                                    title: 'Auto',
-                                    subtitle: 'Match system settings',
-                                    icon: Icons.brightness_auto_outlined,
-                                    value: 'Auto',
-                                    onTap: () {
-                                      setState(() => _selectedTheme = 'Auto');
-                                      context.read<ThemeProvider>().setAuto();
-                                    },
-                                  ),
-                                ],
-                              )),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildThemeOption(
+                                title: 'Light Theme',
+                                subtitle: 'Bright and clean interface',
+                                icon: Icons.light_mode_outlined,
+                                value: 'Light',
+                                onTap: () {
+                                  setState(() => _selectedTheme = 'Light');
+                                  context.read<ThemeProvider>().setLight();
+                                },
+                              ),
+                              Divider(
+                                  height: 1, color: AppTheme.border(context)),
+                              _buildThemeOption(
+                                title: 'Dark Theme',
+                                subtitle: 'Easy on the eyes',
+                                icon: Icons.dark_mode_outlined,
+                                value: 'Dark',
+                                onTap: () {
+                                  setState(() => _selectedTheme = 'Dark');
+                                  context.read<ThemeProvider>().setDark();
+                                },
+                              ),
+                              Divider(
+                                  height: 1, color: AppTheme.border(context)),
+                              _buildThemeOption(
+                                title: 'Auto',
+                                subtitle: 'Match system settings',
+                                icon: Icons.brightness_auto_outlined,
+                                value: 'Auto',
+                                onTap: () {
+                                  setState(() => _selectedTheme = 'Auto');
+                                  context.read<ThemeProvider>().setAuto();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
 
-                          SizedBox(height: screenheight * 0.03),
-                        ],
-                      ),
+                        SizedBox(height: screenheight * 0.03),
+                      ],
                     ),
-            ),
+                  ),
           ),
         ),
       ),
@@ -378,21 +359,10 @@ class _SettingscreenState extends State<Settingscreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF009daa), Color(0xFF00c6d7)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF009daa).withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            color: AppTheme.iconBg(context),
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: Icon(icon, color: Colors.white, size: 24),
+          child: Icon(icon, color: AppTheme.primaryGreen, size: 24),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -401,10 +371,10 @@ class _SettingscreenState extends State<Settingscreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2d3748),
+                  color: AppTheme.text(context),
                   letterSpacing: -0.5,
                 ),
               ),
@@ -413,7 +383,7 @@ class _SettingscreenState extends State<Settingscreen> {
                 subtitle,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.grey[600],
+                  color: AppTheme.textSecondary(context),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -424,35 +394,130 @@ class _SettingscreenState extends State<Settingscreen> {
     );
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      style: TextStyle(fontSize: 15, color: AppTheme.text(context)),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: AppTheme.textSecondary(context).withOpacity(0.6),
+          fontSize: 15,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: AppTheme.primaryGreen,
+          size: 22,
+        ),
+        filled: true,
+        fillColor: AppTheme.iconBg(context),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppTheme.border(context),
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppTheme.border(context),
+            width: 1.5,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: AppTheme.primaryGreen,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFFFF6B6B),
+            width: 1.5,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFFFF6B6B),
+            width: 2,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+      ),
+      validator: validator,
+    );
+  }
+
   Widget _buildThemeOption({
     required String title,
     required String subtitle,
     required IconData icon,
     required String value,
-    required VoidCallback onTap, // ✅ add this
+    required VoidCallback onTap,
   }) {
     final isSelected = _selectedTheme == value;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Row(
           children: [
-            Icon(icon,
-                color: isSelected ? const Color(0xFF009daa) : Colors.grey),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppTheme.primaryGreen.withOpacity(0.15)
+                    : AppTheme.iconBg(context),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected
+                    ? AppTheme.primaryGreen
+                    : AppTheme.textSecondary(context),
+                size: 24,
+              ),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.w600)),
-                  Text(subtitle,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w600,
+                      fontSize: 16,
+                      color: AppTheme.text(context),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -460,7 +525,7 @@ class _SettingscreenState extends State<Settingscreen> {
               value: value,
               groupValue: _selectedTheme,
               onChanged: (_) => onTap(),
-              activeColor: const Color(0xFF009daa),
+              activeColor: AppTheme.primaryGreen,
             )
           ],
         ),
