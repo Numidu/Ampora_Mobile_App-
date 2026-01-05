@@ -59,6 +59,35 @@ class _HomescreenState extends State<Homescreen> {
     await _vehiclesFuture;
   }
 
+  Future<void> _deleteVehicle(String id) async {
+    try {
+      await vehicleService.deleteVehicle(id);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Vehicle deleted successfully'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+
+        _refresh();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Delete failed'),
+          backgroundColor: Colors.black,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -366,8 +395,13 @@ class _HomescreenState extends State<Homescreen> {
                   ],
                 ),
                 child: InkWell(
-                  onTap: () =>
-                      Navigator.pushNamed(context, 'screens/AddVehicle'),
+                  onTap: () async {
+                    final result = await Navigator.pushNamed(
+                        context, 'screens/AddVehicle');
+                    if (result == true) {
+                      _refresh();
+                    }
+                  },
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -531,7 +565,7 @@ class _HomescreenState extends State<Homescreen> {
                   itemCount: filtered.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    childAspectRatio: 0.67,
+                    childAspectRatio: 0.62,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
                   ),
@@ -605,7 +639,7 @@ class _HomescreenState extends State<Homescreen> {
 
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Text(
                   v.model,
                   textAlign: TextAlign.center,
@@ -830,22 +864,13 @@ class _HomescreenState extends State<Homescreen> {
                 const SizedBox(width: 12),
                 OutlinedButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('More actions'),
-                        backgroundColor: const Color(0xFF00C896),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
+                    _deleteVehicle(v.vehicleId);
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.red,
                     side: const BorderSide(
-                      color: Color(0xFF00C896),
+                      color: Colors.red,
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
@@ -853,11 +878,11 @@ class _HomescreenState extends State<Homescreen> {
                     ),
                   ),
                   child: const Text(
-                    'More',
+                    'Delete',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: Color(0xFF00C896),
+                      color: Colors.white,
                     ),
                   ),
                 ),

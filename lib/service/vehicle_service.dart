@@ -28,4 +28,14 @@ class VehicleService {
       throw Exception('Failed to load vehicles');
     }
   }
+
+  Future<String> deleteVehicle(String userId) async {
+    final String apiUrl = "http://34.14.149.31:8083/api/vehicles/$userId";
+    final response = await http.delete(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      return "Delete Succefully";
+    } else {
+      throw Exception("Failed to Delete");
+    }
+  }
 }

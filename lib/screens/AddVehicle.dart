@@ -99,7 +99,7 @@ class _AddvehicleState extends State<Addvehicle> {
         );
         _clearForm();
         Future.delayed(const Duration(milliseconds: 1500), () {
-          if (mounted) Navigator.pop(context);
+          if (mounted) Navigator.pop(context, true);
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

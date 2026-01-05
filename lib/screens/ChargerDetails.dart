@@ -1,9 +1,7 @@
-import 'package:electric_app/main.dart';
-import 'package:electric_app/models/chargersession.dart';
+import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/booking_service.dart';
 import 'package:electric_app/service/chargersession_service.dart';
-import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +19,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
   DateTime? selectedDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
+  bool _isChecking = false;
 
   @override
   void didChangeDependencies() {
@@ -33,10 +32,25 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
   Future<void> check() async {
     if (selectedDate == null || startTime == null || endTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Select date & time")),
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.white),
+              SizedBox(width: 12),
+              Text("Please select date and time"),
+            ],
+          ),
+          backgroundColor: Colors.orange.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
       return;
     }
+
+    setState(() => _isChecking = true);
 
     String date =
         "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
@@ -56,126 +70,354 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
         "endTime": end,
       });
 
+      setState(() => _isChecking = false);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(available ? "Slot is AVAILABLE ✅" : "Slot already BOOKED ❌"),
-          backgroundColor: available ? Colors.green : Colors.red,
+          content: Row(
+            children: [
+              Icon(
+                available ? Icons.check_circle : Icons.cancel,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Text(available ? "Slot is Available ✅" : "Slot Already Booked ❌"),
+            ],
+          ),
+          backgroundColor:
+              available ? AppTheme.primaryGreen : const Color(0xFFFF6B6B),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } catch (e) {
+      setState(() => _isChecking = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Server error: $e")),
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(child: Text("Server error: $e")),
+            ],
+          ),
+          backgroundColor: const Color(0xFFFF6B6B),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: AppTheme.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 4,
-        shadowColor: const Color(0xFF009daa).withOpacity(0.25),
+        backgroundColor: AppTheme.background(context),
+        elevation: 0,
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context, true),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF009daa),
+            color: AppTheme.text(context),
             size: 20,
           ),
         ),
-        title: const Text(
+        title: Text(
           "Charger Details",
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.4,
+            color: AppTheme.text(context),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? const Color(0xFF1A1F2E)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Icon
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: AppTheme.iconBg(context),
+                    shape: BoxShape.circle,
                   ),
-                ],
+                  child: const Icon(
+                    Icons.ev_station,
+                    color: AppTheme.primaryGreen,
+                    size: 48,
+                  ),
+                ),
               ),
-              child: Column(
-                children: [
-                  _bookingField(
-                    context,
-                    icon: Icons.calendar_today,
-                    label: "Select Date",
-                    value: selectedDate,
-                    onTap: () async {
-                      final d = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 30)),
-                        initialDate: DateTime.now(),
-                      );
-                      if (d != null) setState(() => selectedDate = d);
-                    },
+
+              const SizedBox(height: 24),
+
+              // Title
+              Center(
+                child: Text(
+                  "Book Your Charging Slot",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.text(context),
                   ),
-                  const SizedBox(height: 16),
-                  _bookingField(
-                    context,
-                    icon: Icons.access_time,
-                    label: "Start Time",
-                    value: startTime,
-                    onTap: () async {
-                      final t = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (t != null) setState(() => startTime = t);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _bookingField(
-                    context,
-                    icon: Icons.timelapse,
-                    label: "End Time",
-                    value: endTime,
-                    onTap: () async {
-                      final t = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (t != null) setState(() => endTime = t);
-                    },
-                  ),
-                  ElevatedButton(onPressed: check, child: Text("Click"))
-                ],
+                ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 8),
+
+              Center(
+                child: Text(
+                  "Select your preferred date and time",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Booking Card
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppTheme.card(context),
+                  borderRadius: BorderRadius.circular(24),
+                  border: isDark
+                      ? Border.all(color: AppTheme.border(context), width: 1)
+                      : null,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Booking Details",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.text(context),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Date Field
+                    _bookingField(
+                      context,
+                      icon: Icons.calendar_today_outlined,
+                      label: "Select Date",
+                      value: selectedDate,
+                      onTap: () async {
+                        final d = await showDatePicker(
+                          context: context,
+                          firstDate: DateTime.now(),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 30)),
+                          initialDate: selectedDate ?? DateTime.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: AppTheme.primaryGreen,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (d != null) setState(() => selectedDate = d);
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Start Time Field
+                    _bookingField(
+                      context,
+                      icon: Icons.access_time_outlined,
+                      label: "Start Time",
+                      value: startTime,
+                      onTap: () async {
+                        final t = await showTimePicker(
+                          context: context,
+                          initialTime: startTime ?? TimeOfDay.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: AppTheme.primaryGreen,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (t != null) setState(() => startTime = t);
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // End Time Field
+                    _bookingField(
+                      context,
+                      icon: Icons.timelapse_outlined,
+                      label: "End Time",
+                      value: endTime,
+                      onTap: () async {
+                        final t = await showTimePicker(
+                          context: context,
+                          initialTime: endTime ?? TimeOfDay.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: AppTheme.primaryGreen,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (t != null) setState(() => endTime = t);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Info Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE3F2FD),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFFBBDEFB),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      color: Color(0xFF1976D2),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Check availability before booking to ensure your preferred time slot is available',
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              // Check Availability Button
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: _isChecking ? null : check,
+                  icon: _isChecking
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.search, size: 22),
+                  label: Text(
+                    _isChecking ? "Checking..." : "Check Availability",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.bgWhite,
+                    disabledBackgroundColor:
+                        AppTheme.primaryGreen.withOpacity(0.5),
+                    foregroundColor: Colors.black,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: _isChecking ? null : check,
+                  icon: Icon(Icons.abc),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryGreen,
+                    disabledBackgroundColor:
+                        AppTheme.primaryGreen.withOpacity(0.5),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  label: Text("Book"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-Widget _bookingField(BuildContext context,
-    {required IconData icon,
-    required String label,
-    required dynamic value,
-    required VoidCallback onTap}) {
+Widget _bookingField(
+  BuildContext context, {
+  required IconData icon,
+  required String label,
+  required dynamic value,
+  required VoidCallback onTap,
+}) {
   String text = "Tap to select";
 
   if (value is DateTime) {
@@ -185,35 +427,68 @@ Widget _bookingField(BuildContext context,
     text = value.format(context);
   }
 
-  final bool dark = Theme.of(context).brightness == Brightness.dark;
-
   return InkWell(
     onTap: onTap,
     borderRadius: BorderRadius.circular(16),
     child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: dark ? const Color(0xFF252D3C) : const Color(0xFFF6F8FA),
+        color: AppTheme.iconBg(context),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.border(context),
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF00C896)),
-          const SizedBox(width: 14),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: value != null
+                  ? AppTheme.primaryGreen.withOpacity(0.15)
+                  : AppTheme.border(context).withOpacity(0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: value != null
+                  ? AppTheme.primaryGreen
+                  : AppTheme.textSecondary(context),
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.textSecondary(context),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(text,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: dark ? Colors.white : Colors.black)),
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: value != null
+                        ? AppTheme.text(context)
+                        : AppTheme.textSecondary(context),
+                  ),
+                ),
               ],
             ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: AppTheme.textSecondary(context),
           ),
         ],
       ),

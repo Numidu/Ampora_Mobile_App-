@@ -38,8 +38,8 @@ class _BottomnavbarState extends State<Bottomnavbar> {
             gradient: LinearGradient(
               colors: [
                 Color(0xFF00c6b3),
-                Color(0xFF009daa),
-                Color(0xFF007b8d),
+                Color(0xFF2ECC71),
+                Color(0xFF27AE60),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -60,12 +60,27 @@ class _BottomnavbarState extends State<Bottomnavbar> {
           ),
         ),
         centerTitle: true,
-        actions: const [
-          Icon(Icons.notifications_none_rounded, color: Colors.white),
-          SizedBox(width: 12),
-          CircleAvatar(
-              radius: 18, backgroundImage: AssetImage('images/profile.jpg')),
-          SizedBox(width: 12),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.notifications_none_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Handle notifications
+            },
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: () {
+              setState(() => _selectedIndex = 4); // Navigate to profile
+            },
+            child: const CircleAvatar(
+              radius: 18,
+              backgroundImage: AssetImage('images/profile.jpg'),
+            ),
+          ),
+          const SizedBox(width: 12),
         ],
       ),
       body: SafeArea(child: _screens[_selectedIndex]),

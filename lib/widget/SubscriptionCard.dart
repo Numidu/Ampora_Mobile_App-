@@ -1,6 +1,7 @@
 import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/service/subscription_service.dart';
 import 'package:flutter/material.dart';
+import 'package:payhere_mobilesdk_flutter/payhere_mobilesdk_flutter.dart';
 
 class SubscriptionCard extends StatelessWidget {
   final String title;
@@ -42,6 +43,44 @@ class SubscriptionCard extends StatelessWidget {
       default:
         return Icons.subscriptions;
     }
+  }
+
+// Payment function eka
+  void startPayHerePayment(VoidCallback onSuccess) {
+    Map paymentObject = {
+      "sandbox": true,
+      "merchant_id": "1228683",
+      "merchant_secret":
+          "Mzg0MjQ0NzY5ODQwODcxMjY4OTA0MjgzMjE3ODE4MzUzNTY2MjU1Mw==",
+      "notify_url": "http://sample.com/notify",
+      "order_id": "ItemNo12345",
+      "items": "$title Plan",
+      "amount": price.toStringAsFixed(2),
+      "currency": "LKR",
+      "first_name": "Saman",
+      "last_name": "Perera",
+      "email": "samanp@gmail.com",
+      "phone": "0771234567",
+      "address": "No.1, Galle Road",
+      "city": "Colombo",
+      "country": "Sri Lanka",
+      "delivery_address": "No. 46, Galle road, Kalutara South",
+      "delivery_city": "Kalutara",
+      "delivery_country": "Sri Lanka",
+      "custom_1": "",
+      "custom_2": ""
+    };
+
+    PayHere.startPayment(paymentObject, (paymentId) {
+      onSuccess();
+      print("One Time Payment Success. Payment Id: $paymentId");
+    }, (error) {
+      // Payment Failed nam methanata enawa
+      print("One Time Payment Failed. Error: $error");
+    }, () {
+      // User payment popup eka close kaloth
+      print("One Time Payment Dismissed");
+    });
   }
 
   @override
@@ -236,7 +275,9 @@ class SubscriptionCard extends StatelessWidget {
                   Text(description),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: isLoading ? null : handleActivate,
+                    onPressed: isLoading
+                        ? null
+                        : () => startPayHerePayment(handleActivate),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF009DAA),
                       padding: const EdgeInsets.symmetric(vertical: 14),
