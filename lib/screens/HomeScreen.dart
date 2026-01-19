@@ -787,7 +787,7 @@ class _HomescreenState extends State<Homescreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                    'images/car1.jpeg',
+                    'images/gemina.png',
                     height: 160,
                     width: double.infinity,
                     fit: BoxFit.cover,
