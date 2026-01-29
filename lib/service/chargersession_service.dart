@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:electric_app/models/chargersession.dart';
 
 class ChargerSessionService {
-  static const String baseUrl = "http://34.14.149.31:8083/api/chargersession";
+  static const String baseUrl = "http://13.211.243.202:8083/api/chargersession";
 
   Future<List<ChargerSession>> getAllSessions() async {
     final res = await http.get(Uri.parse(baseUrl));

@@ -53,6 +53,7 @@ class _HomescreenState extends State<Homescreen> {
     if (userId == null) return;
 
     setState(() {
+      print("userId djjdkf $userId");
       _vehiclesFuture = vehicleService.fetchVehicles(userId!);
     });
 
@@ -252,7 +253,7 @@ class _HomescreenState extends State<Homescreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Icon(
-                        Icons.bolt,
+                        Icons.qr_code_scanner,
                         color: Color(0xFF00C896),
                         size: 32,
                       ),
@@ -266,7 +267,7 @@ class _HomescreenState extends State<Homescreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Charge Points",
+                            "Scan QR Code",
                             style: TextStyle(
                               color: AppTheme.textSecondary(context),
                               fontWeight: FontWeight.w600,
@@ -275,10 +276,10 @@ class _HomescreenState extends State<Homescreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "0.00",
+                            "Tap to scan",
                             style: TextStyle(
                               color: AppTheme.text(context),
-                              fontSize: 28,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -286,7 +287,7 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                     ),
 
-                    // Add button
+                    // Scan button
                     Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFF00C896),
@@ -301,19 +302,13 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                       child: IconButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Add points'),
-                              backgroundColor: const Color(0xFF00C896),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          );
+                          Navigator.pushNamed(context, 'screen/ScanPage');
                         },
-                        icon: const Icon(Icons.add,
-                            color: Colors.white, size: 24),
+                        icon: const Icon(
+                          Icons.qr_code,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                         padding: const EdgeInsets.all(12),
                       ),
                     ),
@@ -495,7 +490,7 @@ class _HomescreenState extends State<Homescreen> {
                 final filtered = _search.isEmpty
                     ? vehicles
                     : vehicles
-                        .where((v) => (v.model)
+                        .where((v) => (v.modelName)
                             .toLowerCase()
                             .contains(_search.toLowerCase()))
                         .toList();
@@ -584,8 +579,8 @@ class _HomescreenState extends State<Homescreen> {
 
   Widget _buildVehicleCard(BuildContext context, Vehicle v) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final capacityLabel = '${v.batteryCapacity.toStringAsFixed(1)} kWh';
-    final efficiencyLabel = '${v.efficiency.toStringAsFixed(1)} km/kWh';
+    final capacityLabel = '${v.variant.toStringAsFixed(1)} ';
+    final efficiencyLabel = '${v.rangeKm.toStringAsFixed(1)} km/kWh';
 
     final connector = v.connectorType.toUpperCase();
     final connectorColor =
@@ -641,7 +636,7 @@ class _HomescreenState extends State<Homescreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Text(
-                  v.model,
+                  v.modelName,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -796,7 +791,7 @@ class _HomescreenState extends State<Homescreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                v.model,
+                v.modelName,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -817,7 +812,7 @@ class _HomescreenState extends State<Homescreen> {
                     context,
                     Icons.battery_charging_full,
                     'Battery Capacity',
-                    '${v.batteryCapacity.toStringAsFixed(1)} kWh',
+                    '${v.variant.toStringAsFixed(1)}',
                     const Color(0xFF00C896),
                   ),
                   const Divider(height: 24),
@@ -825,7 +820,7 @@ class _HomescreenState extends State<Homescreen> {
                     context,
                     Icons.speed,
                     'Efficiency',
-                    '${v.efficiency.toStringAsFixed(1)} km/kWh',
+                    '${v.rangeKm.toStringAsFixed(1)} km/kWh',
                     const Color(0xFF00C896),
                   ),
                   const Divider(height: 24),

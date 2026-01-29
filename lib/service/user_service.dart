@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 
 class UserService {
-  final String apiUrl = "http://34.14.149.31:8083/api/auth/register";
+  final String apiUrl = "http://13.211.243.202:8083/api/auth/register";
 
   Future<bool> registerUser(Map<String, dynamic> userData) async {
     final response = await http.post(
@@ -21,7 +21,7 @@ class UserService {
   }
 
   Future<String?> loginUser(String email, String password) async {
-    final url = Uri.parse('http://34.14.149.31:8083/api/auth/login');
+    final url = Uri.parse('http://13.211.243.202:8083/api/auth/login');
 
     final response = await http.post(
       url,
@@ -43,7 +43,7 @@ class UserService {
   }
 
   Future<List<User>> getAllUsers(String token) async {
-    final url = Uri.parse("http://34.14.149.31:8083/api/users");
+    final url = Uri.parse("http://13.211.243.202:8083/api/users");
 
     final response = await http.get(
       url,
@@ -70,7 +70,7 @@ class UserService {
   }
 
   Future<User> getuserId(String? userId) async {
-    final url = Uri.parse("http://34.14.149.31:8083/api/users/$userId");
+    final url = Uri.parse("http://13.211.243.202:8083/api/users/$userId");
     final response = await http.get(
       url,
       headers: {
@@ -81,7 +81,7 @@ class UserService {
       final data = jsonDecode(response.body);
       return User.fromJson(data);
     } else {
-      throw Exception("Faild to load");
+      throw Exception("Failed to load");
     }
   }
 

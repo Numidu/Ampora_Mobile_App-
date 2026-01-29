@@ -46,6 +46,8 @@ dependencies:
   jwt_decode: ^0.3.1
   url_launcher: ^6.3.1
   payhere_mobilesdk_flutter: ^3.1.1
+  mobile_scanner: ^5.0.0
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   flutter_test:

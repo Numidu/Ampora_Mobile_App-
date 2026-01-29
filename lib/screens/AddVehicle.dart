@@ -1,4 +1,8 @@
+import 'package:electric_app/models/brand.dart';
+import 'package:electric_app/models/model.dart';
 import 'package:electric_app/provider/authj_provider.dart';
+import 'package:electric_app/service/brand_service.dart';
+import 'package:electric_app/service/model_service.dart';
 import 'package:electric_app/service/vehicle_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart%20';
@@ -12,26 +16,40 @@ class Addvehicle extends StatefulWidget {
 
 class _AddvehicleState extends State<Addvehicle> {
   String? userId;
-  final TextEditingController _efficience = TextEditingController();
-  final TextEditingController _vehiModel = TextEditingController();
-  final TextEditingController _BattryCapacity = TextEditingController();
+  final TextEditingController _rangeKm = TextEditingController();
+  final TextEditingController _plate = TextEditingController();
+  final TextEditingController _variant = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? selectedValue;
   bool _isLoading = false;
+  List<brand> brands = [];
+  List<model> allModels = [];
+  List<model> filteredModels = [];
+  final ModelService _modelService = ModelService();
+  final BrandService _brandService = BrandService();
+  int? selectedBrandId;
+  int? selectedModelId;
+  bool isLoadingModels = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBrandsAndModels();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final user = context.read<AuthProvider>().currentUser;
     userId = user?.userId;
+    print("User ID in AddVehicle: $userId");
   }
 
   @override
   void dispose() {
-    _efficience.dispose();
-    _vehiModel.dispose();
-    _BattryCapacity.dispose();
+    _rangeKm.dispose();
+    _plate.dispose();
+    _variant.dispose();
     super.dispose();
   }
 
@@ -63,18 +81,22 @@ class _AddvehicleState extends State<Addvehicle> {
       _isLoading = true;
     });
 
-    double? vehiEfficience = double.tryParse(_efficience.text.trim());
-    String vehiModel = _vehiModel.text.trim();
-    double? battryCapacity = double.tryParse(_BattryCapacity.text.trim());
+    double? rangeKm = double.tryParse(_rangeKm.text.trim());
+    String plate = _plate.text.trim();
+    double? variant = double.tryParse(_variant.text.trim());
     String connectorType = selectedValue ?? '';
+    int model = selectedModelId!;
+    int brand = selectedBrandId!;
 
     try {
       bool issucess = await VehicleService().registerVehicle({
-        'model': vehiModel,
-        'batteryCapacityKwh': battryCapacity,
-        'efficiencyKmPerKwh': vehiEfficience,
+        'variant': variant,
+        'plate': plate,
+        'rangeKm': rangeKm,
         'connectorType': connectorType,
-        "userId": userId
+        "userId": userId,
+        'brand_id': brand,
+        'model_id': model,
       });
 
       setState(() {
@@ -142,11 +164,30 @@ class _AddvehicleState extends State<Addvehicle> {
 
   void _clearForm() {
     setState(() {
-      _vehiModel.clear();
-      _BattryCapacity.clear();
-      _efficience.clear();
+      _variant.clear();
+      _plate.clear();
+      _rangeKm.clear();
+      selectedModelId = null;
+      selectedBrandId = null;
       selectedValue = null;
     });
+  }
+
+  Future<void> fetchBrandsAndModels() async {
+    try {
+      final brandData = await _brandService.fetchBrands();
+      final modelData = await _modelService.fetchmodels();
+
+      setState(() {
+        brands = brandData;
+        allModels = modelData;
+      });
+
+      print("Brands: ${brands.length}");
+      print("Models: ${allModels.length}");
+    } catch (e) {
+      print("ERROR loading data: $e");
+    }
   }
 
   @override
@@ -234,75 +275,57 @@ class _AddvehicleState extends State<Addvehicle> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _vehiModel,
-                        style: const TextStyle(fontSize: 15),
-                        decoration: InputDecoration(
-                          hintText: 'e.g., Tesla Model 3',
-                          hintStyle: const TextStyle(
-                            color: Color(0xFFB0BEC5),
-                            fontSize: 15,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.directions_car_outlined,
-                            color: Color(0xFF00C896),
-                            size: 22,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF7FFFE),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE0E7ED),
-                              width: 1.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE0E7ED),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF00C896),
-                              width: 2,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFFF6B6B),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFFF6B6B),
-                              width: 2,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter vehicle model';
-                          }
-                          return null;
+
+                      //brand dropdown
+                      DropdownButtonFormField<int>(
+                        value: selectedBrandId,
+                        hint: const Text("Select Brand"),
+                        items: brands.map((b) {
+                          return DropdownMenuItem<int>(
+                            value: b.id,
+                            child: Text(b.name),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedBrandId = value;
+                            selectedModelId = null;
+
+                            // 🔥 FRONTEND FILTER
+                            filteredModels = allModels
+                                .where((m) => m.brand_id == value)
+                                .toList();
+
+                            print("Filtered models: ${filteredModels.length}");
+                          });
                         },
+                      ),
+                      //model dropdown
+
+                      const SizedBox(height: 20),
+                      DropdownButtonFormField<int>(
+                        value: selectedModelId,
+                        hint: const Text("Select Model"),
+                        items: filteredModels.map((m) {
+                          return DropdownMenuItem<int>(
+                            value: m.id,
+                            child: Text(m.name),
+                          );
+                        }).toList(),
+                        onChanged: filteredModels.isEmpty
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  selectedModelId = value;
+                                });
+                              },
                       ),
 
                       const SizedBox(height: 20),
 
                       // Battery Capacity
                       const Text(
-                        'Battery Capacity',
+                        'Variant',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -311,7 +334,7 @@ class _AddvehicleState extends State<Addvehicle> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: _BattryCapacity,
+                        controller: _variant,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(fontSize: 15),
                         decoration: InputDecoration(
@@ -369,7 +392,7 @@ class _AddvehicleState extends State<Addvehicle> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter battery capacity';
+                            return 'Please enter variant';
                           }
                           if (double.tryParse(value) == null) {
                             return 'Please enter a valid number';
@@ -382,7 +405,7 @@ class _AddvehicleState extends State<Addvehicle> {
 
                       // Efficiency
                       const Text(
-                        'Efficiency',
+                        'Range Km',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -391,7 +414,7 @@ class _AddvehicleState extends State<Addvehicle> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: _efficience,
+                        controller: _rangeKm,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(fontSize: 15),
                         decoration: InputDecoration(
@@ -449,10 +472,76 @@ class _AddvehicleState extends State<Addvehicle> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter efficiency';
+                            return 'Please enter range Km ';
                           }
                           if (double.tryParse(value) == null) {
                             return 'Please enter a valid number';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+                      //vehicle plate
+                      TextFormField(
+                        controller: _plate,
+                        style: const TextStyle(fontSize: 15),
+                        decoration: InputDecoration(
+                          hintText: 'CC 123 AA',
+                          hintStyle: const TextStyle(
+                            color: Color(0xFFB0BEC5),
+                            fontSize: 15,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.confirmation_number,
+                            color: Color(0xFF00C896),
+                            size: 22,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF7FFFE),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF00C896),
+                              width: 2,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFFF6B6B),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFFF6B6B),
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter plate number';
                           }
                           return null;
                         },
@@ -517,8 +606,8 @@ class _AddvehicleState extends State<Addvehicle> {
                         ),
                         items: [
                           {"value": "NACS", "icon": Icons.bolt},
-                          {"value": "Type 1", "icon": Icons.power},
-                          {"value": "Type 2", "icon": Icons.power_outlined},
+                          {"value": "TYPE1", "icon": Icons.power},
+                          {"value": "TYPE2", "icon": Icons.power_outlined},
                           {"value": "CCS2", "icon": Icons.ev_station},
                         ].map((type) {
                           return DropdownMenuItem(

@@ -3,7 +3,7 @@ import 'package:electric_app/models/subscription.dart';
 import 'package:http/http.dart' as http;
 
 class SubscriptionService {
-  final String apiUrl = "http://34.14.149.31:8083/api/subscription";
+  final String apiUrl = "http://13.211.243.202:8083/api/subscription";
 
   Future<bool> createSubscription(Map<String, dynamic> subscriptionData) async {
     final response = await http.post(

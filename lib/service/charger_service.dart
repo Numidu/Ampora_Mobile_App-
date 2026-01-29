@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ChargerService {
-  static const String baseUrl = "http://34.14.149.31:8083/api/charger";
+  static const String baseUrl = "http://13.211.243.202:8083/api/charger";
 
   Future<List<Charger>> fetchChargers(String stationName) async {
     final response = await http.get(

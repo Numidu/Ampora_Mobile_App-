@@ -4,6 +4,7 @@ import 'package:electric_app/screens/BottomNavBar.dart';
 import 'package:electric_app/screens/ChargerDetails.dart';
 import 'package:electric_app/screens/ChargerScreen.dart';
 import 'package:electric_app/screens/Login.dart';
+import 'package:electric_app/screens/ScanPage.dart';
 import 'package:electric_app/screens/SettingScreen.dart';
 import 'package:electric_app/screens/SignInScreen.dart';
 import 'package:electric_app/screens/SplashScreen.dart';
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
         'screen/Charger': (context) => const Chargerscreen(),
         'screen/ChargerDetails': (context) => const ChargerDetailsScreen(),
         'screen/Station': (context) => const Stationscreen(),
-        'screen/Splash': (context) => const SplashScreen()
+        'screen/Splash': (context) => const SplashScreen(),
+        'screen/ScanPage': (context) => const ScanPage()
       },
       themeMode: theme.themeMode,
       theme: ThemeData.light(),

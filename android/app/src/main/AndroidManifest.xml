@@ -8,6 +8,8 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:label">
 
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDTJZLVjkqrfqg8_G1ufEWrWSWkwbczqdw" />
@@ -52,5 +54,8 @@
             <data android:scheme="https" />
         </intent>
     </queries>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+
 
 </manifest>
