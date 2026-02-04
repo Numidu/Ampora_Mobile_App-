@@ -238,7 +238,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                           builder: (context, child) {
                             return Theme(
                               data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
+                                colorScheme: const ColorScheme.light(
                                   primary: AppTheme.primaryGreen,
                                 ),
                               ),
@@ -265,7 +265,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                           builder: (context, child) {
                             return Theme(
                               data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
+                                colorScheme: const ColorScheme.light(
                                   primary: AppTheme.primaryGreen,
                                 ),
                               ),
@@ -292,7 +292,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                           builder: (context, child) {
                             return Theme(
                               data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
+                                colorScheme: const ColorScheme.light(
                                   primary: AppTheme.primaryGreen,
                                 ),
                               ),
@@ -389,7 +389,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                 height: 54,
                 child: ElevatedButton.icon(
                   onPressed: _isChecking ? null : check,
-                  icon: Icon(Icons.abc),
+                  icon: const Icon(Icons.abc),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryGreen,
                     disabledBackgroundColor:
@@ -400,7 +400,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  label: Text("Book"),
+                  label: const Text("Book"),
                 ),
               ),
             ],

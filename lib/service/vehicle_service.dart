@@ -7,7 +7,7 @@ class VehicleService {
     print(vehicleData);
     const String apiUrl = "http://13.211.243.202:8083/api/vehicles";
     final response = await http.post(
-      Uri.parse('$apiUrl'),
+      Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(vehicleData),
     );

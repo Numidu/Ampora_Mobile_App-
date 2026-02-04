@@ -21,7 +21,7 @@ class SubscriptionService {
 
   Future<Subscription?> fetchSubscription(String? userId) async {
     final response = await http.get(
-      Uri.parse("http://34.14.149.31:8083/api/subscription/user/${userId}"),
+      Uri.parse("http://13.211.243.202:8083/api/subscription/user/$userId"),
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 200) {

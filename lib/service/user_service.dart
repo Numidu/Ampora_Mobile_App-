@@ -8,7 +8,7 @@ class UserService {
 
   Future<bool> registerUser(Map<String, dynamic> userData) async {
     final response = await http.post(
-      Uri.parse('$apiUrl'),
+      Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(userData),
     );
@@ -40,6 +40,7 @@ class UserService {
     } else {
       print("Login failed: ${response.body}");
     }
+    return null;
   }
 
   Future<List<User>> getAllUsers(String token) async {

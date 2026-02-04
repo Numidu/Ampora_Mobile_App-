@@ -295,8 +295,9 @@ class _SigninscreenState extends State<Signinscreen> {
                           ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty)
+                          if (v == null || v.isEmpty) {
                             return 'Email is required';
+                          }
                           if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
                               .hasMatch(v)) {
                             return 'Enter a valid email address';
@@ -375,8 +376,9 @@ class _SigninscreenState extends State<Signinscreen> {
                           ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty)
+                          if (v == null || v.isEmpty) {
                             return 'Phone is required';
+                          }
                           if (!RegExp(r'^(07[0-9]{8})$').hasMatch(v)) {
                             return 'Enter a valid phone number';
                           }

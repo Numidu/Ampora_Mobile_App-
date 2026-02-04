@@ -5,7 +5,7 @@ import 'package:electric_app/widget/Logo_lorder.dart';
 import 'package:electric_app/widget/SubscriptionCard.dart';
 import 'package:flutter/material.dart';
 import 'package:electric_app/models/subscription.dart';
-import 'package:provider/provider.dart%20';
+import 'package:provider/provider.dart';
 
 class Billscreen extends StatefulWidget {
   const Billscreen({super.key});
@@ -31,6 +31,7 @@ class _BillscreenState extends State<Billscreen> {
 
     final user = context.read<AuthProvider>().currentUser;
     userId = user?.userId;
+    print("BillScreen: Fetched userId: $userId");
 
     if (userId != null) {
       _subscriptionsFuture = _subscriptionService.fetchSubscription(userId!);
@@ -122,21 +123,21 @@ class _BillscreenState extends State<Billscreen> {
                 SubscriptionCard(
                   title: "Basic",
                   status: statusFor("Basic"),
-                  price: 29.99,
+                  price: 1000.00,
                   onActivated: _refresh,
                   userid: userId!,
                 ),
                 SubscriptionCard(
                   title: "Premium",
                   status: statusFor("Premium"),
-                  price: 49.99,
+                  price: 5000.00,
                   onActivated: _refresh,
                   userid: userId!,
                 ),
                 SubscriptionCard(
                   title: "Enterprise",
                   status: statusFor("Enterprise"),
-                  price: 99.99,
+                  price: 10000.00,
                   onActivated: _refresh,
                   userid: userId!,
                 ),
@@ -219,8 +220,8 @@ class _BillscreenState extends State<Billscreen> {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: Colors.green, size: 20),
-          SizedBox(width: 8),
+          const Icon(Icons.check_circle, color: Colors.green, size: 20),
+          const SizedBox(width: 8),
           Expanded(child: Text(text)),
         ],
       ),

@@ -1,12 +1,16 @@
-# Fix for Conscrypt / OkHttp missing classes
--dontwarn org.conscrypt.**
--dontwarn okhttp3.internal.platform.ConscryptPlatform
+# Retrofit annotations and interfaces
+-keepattributes Signature
+-keepattributes *Annotation*
 
-# Prevent PayHere SDK classes from being stripped or obfuscated
+-keep interface retrofit2.** { *; }
+-keep class retrofit2.** { *; }
+-keep class okhttp3.** { *; }
+-keep class okio.** { *; }
+
+# PayHere Classes
 -keep class lk.payhere.** { *; }
--keep interface lk.payhere.** { *; }
--dontwarn lk.payhere.**
-
-# Additional fixes for runtime crashes
--keep class com.google.gson.** { *; }
--keepattributes Signature, *Annotation*, EnclosingMethod
+-keep interface lk.payhere.androidsdk.PayhereSDK { *; }
+-keep interface u2.c { *; }
+-keep class lk.payhere.androidsdk.models.PaymentMethodResponse { *; }
+-keep class lk.payhere.androidsdk.models.** { *; }
+-keep class lk.payhere.androidsdk.** { *; }

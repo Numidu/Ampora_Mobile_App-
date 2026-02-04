@@ -7,7 +7,7 @@ import 'package:electric_app/screens/TripPlanner.dart';
 import 'package:flutter/material.dart';
 
 class Bottomnavbar extends StatefulWidget {
-  const Bottomnavbar({Key? key}) : super(key: key);
+  const Bottomnavbar({super.key});
 
   @override
   State<Bottomnavbar> createState() => _BottomnavbarState();

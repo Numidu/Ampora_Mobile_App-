@@ -266,8 +266,10 @@ class _AddvehicleState extends State<Addvehicle> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Vehicle Model
+
+                      //brand dropdown
                       const Text(
-                        'Vehicle Model',
+                        'Select Brand',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -276,14 +278,72 @@ class _AddvehicleState extends State<Addvehicle> {
                       ),
                       const SizedBox(height: 8),
 
-                      //brand dropdown
                       DropdownButtonFormField<int>(
-                        value: selectedBrandId,
-                        hint: const Text("Select Brand"),
+                        initialValue: selectedBrandId,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Color(0xFF1A2332),
+                        ),
+                        hint: const Text(
+                          "Select brand",
+                          style: TextStyle(
+                            color: Color(0xFFB0BEC5),
+                            fontSize: 15,
+                          ),
+                        ),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.branding_watermark, // brand icon
+                            color: Color(0xFF00C896),
+                            size: 22,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF7FFFE),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF00C896),
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
                         items: brands.map((b) {
                           return DropdownMenuItem<int>(
                             value: b.id,
-                            child: Text(b.name),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.factory, // brand item icon
+                                  size: 20,
+                                  color: Color(0xFF00C896),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  b.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -300,16 +360,86 @@ class _AddvehicleState extends State<Addvehicle> {
                           });
                         },
                       ),
+
                       //model dropdown
 
                       const SizedBox(height: 20),
+                      const Text(
+                        'Select Model',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1A2332),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
                       DropdownButtonFormField<int>(
-                        value: selectedModelId,
-                        hint: const Text("Select Model"),
+                        initialValue: selectedModelId,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Color(0xFF1A2332),
+                        ),
+                        hint: const Text(
+                          "Select model",
+                          style: TextStyle(
+                            color: Color(0xFFB0BEC5),
+                            fontSize: 15,
+                          ),
+                        ),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.directions_car,
+                            color: Color(0xFF00C896),
+                            size: 22,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF7FFFE),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE0E7ED),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF00C896),
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
                         items: filteredModels.map((m) {
                           return DropdownMenuItem<int>(
                             value: m.id,
-                            child: Text(m.name),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.car_rental,
+                                  size: 20,
+                                  color: Color(0xFF00C896),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  m.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         }).toList(),
                         onChanged: filteredModels.isEmpty
@@ -325,7 +455,7 @@ class _AddvehicleState extends State<Addvehicle> {
 
                       // Battery Capacity
                       const Text(
-                        'Variant',
+                        'Efficiency (kWh)',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -482,7 +612,16 @@ class _AddvehicleState extends State<Addvehicle> {
                       ),
 
                       const SizedBox(height: 20),
+                      const Text(
+                        'Variant',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1A2332),
+                        ),
+                      ),
                       //vehicle plate
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _plate,
                         style: const TextStyle(fontSize: 15),
@@ -560,7 +699,7 @@ class _AddvehicleState extends State<Addvehicle> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: selectedValue,
+                        initialValue: selectedValue,
                         style: const TextStyle(
                           fontSize: 15,
                           color: Color(0xFF1A2332),

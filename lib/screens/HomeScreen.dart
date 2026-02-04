@@ -81,8 +81,8 @@ class _HomescreenState extends State<Homescreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Delete failed'),
+        const SnackBar(
+          content: Text('Delete failed'),
           backgroundColor: Colors.black,
         ),
       );
@@ -791,7 +791,7 @@ class _HomescreenState extends State<Homescreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                v.modelName,
+                '${v.brandName}  ${v.modelName}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -812,7 +812,7 @@ class _HomescreenState extends State<Homescreen> {
                     context,
                     Icons.battery_charging_full,
                     'Battery Capacity',
-                    '${v.variant.toStringAsFixed(1)}',
+                    v.variant.toStringAsFixed(1),
                     const Color(0xFF00C896),
                   ),
                   const Divider(height: 24),

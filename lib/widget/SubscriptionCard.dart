@@ -47,15 +47,15 @@ class SubscriptionCard extends StatelessWidget {
 
 // Payment function eka
   void startPayHerePayment(VoidCallback onSuccess) {
-    Map paymentObject = {
+    Map<String, dynamic> paymentObject = {
       "sandbox": true,
       "merchant_id": "1228683",
       "merchant_secret":
           "Mzg0MjQ0NzY5ODQwODcxMjY4OTA0MjgzMjE3ODE4MzUzNTY2MjU1Mw==",
-      "notify_url": "http://sample.com/notify",
+      "notify_url": "https://sample.com/notify",
       "order_id": "ItemNo12345",
-      "items": "$title Plan",
-      "amount": price.toStringAsFixed(2),
+      "items": "${title ?? 'Sample'} Plan",
+      "amount": double.parse(price.toStringAsFixed(2)),
       "currency": "LKR",
       "first_name": "Saman",
       "last_name": "Perera",
