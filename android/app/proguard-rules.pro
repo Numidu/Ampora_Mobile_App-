@@ -14,3 +14,7 @@
 -keep class lk.payhere.androidsdk.models.PaymentMethodResponse { *; }
 -keep class lk.payhere.androidsdk.models.** { *; }
 -keep class lk.payhere.androidsdk.** { *; }
+
+# Conscrypt
+-keep class org.conscrypt.** { *; }
+-dontwarn org.conscrypt.**
