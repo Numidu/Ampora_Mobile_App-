@@ -1,91 +1,94 @@
-import 'package:electric_app/service/station_service.dart';
-import 'package:electric_app/widget/Logo_lorder.dart';
-import 'package:electric_app/widget/StationCard.dart';
+import 'package:electric_app/widget/BookingsList.dart';
+import 'package:electric_app/widget/StationsList.dart';
 import 'package:flutter/material.dart';
 
-class Stationscreen extends StatefulWidget {
-  const Stationscreen({super.key});
+class StationBookingScreen extends StatefulWidget {
+  const StationBookingScreen({super.key});
 
   @override
-  State<Stationscreen> createState() => _StationscreenState();
+  State<StationBookingScreen> createState() => _StationBookingScreenState();
 }
 
-class _StationscreenState extends State<Stationscreen> {
-  final StationService _stationservice = StationService();
+class _StationBookingScreenState extends State<StationBookingScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   String query = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: TextField(
-            onChanged: (value) => setState(() => query = value),
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : const Color(0xFF1A2332),
-            ),
-            decoration: InputDecoration(
-              hintText: "Search stations...",
-              hintStyle: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey.shade400
-                    : Colors.grey.shade600,
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey.shade400
-                    : Colors.grey.shade600,
-              ),
-              filled: true,
-              fillColor: Theme.of(context).brightness == Brightness.dark
-                  ? const Color(0xFF1A1F2E)
-                  : Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Traveler"),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: Icon(Icons.person_outline),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          // 🔍 Search
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              onChanged: (v) => setState(() => query = v),
+              decoration: InputDecoration(
+                hintText: "Find station or booking...",
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
           ),
-        ),
-        Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: _stationservice.fetchStations(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: LogoLoader());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text(snapshot.error.toString()));
-                  }
-                  final stations = snapshot.data!
-                      .where((station) =>
-                          station['name']
-                              .toString()
-                              .toLowerCase()
-                              .contains(query.toLowerCase()) ||
-                          station['address']
-                              .toString()
-                              .toLowerCase()
-                              .contains(query.toLowerCase()) ||
-                          station['status']
-                              .toString()
-                              .toLowerCase()
-                              .contains(query.toLowerCase()))
-                      .toList();
-                  if (stations.isEmpty) {
-                    return const Center(child: Text("No stations found"));
-                  }
-                  return ListView.builder(
-                    itemCount: stations.length,
-                    itemBuilder: (context, index) {
-                      return StationCardMap(station: stations[index]);
-                    },
-                  );
-                }))
-      ],
+
+          // 🔁 Tabs
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              tabs: const [
+                Tab(text: "Stations"),
+                Tab(text: "My Bookings"),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // 📋 Content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                StationsList(query: query),
+                BookingsList(query: query),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

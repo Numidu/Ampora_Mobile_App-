@@ -20,7 +20,7 @@ class _BottomnavbarState extends State<Bottomnavbar> {
     Homescreen(),
     TripPlanner(),
     Billscreen(),
-    Stationscreen(),
+    StationBookingScreen(),
     Profilescreen(),
   ];
 

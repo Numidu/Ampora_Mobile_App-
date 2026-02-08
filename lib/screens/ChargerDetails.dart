@@ -1,8 +1,10 @@
+import 'package:electric_app/models/booking.dart';
 import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/service/booking_service.dart';
 import 'package:electric_app/service/chargersession_service.dart';
 import 'package:flutter/material.dart';
+import 'package:payhere_mobilesdk_flutter/payhere_mobilesdk_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ChargerDetailsScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   bool _isChecking = false;
+  final BookingService _bookingService = BookingService();
 
   @override
   void didChangeDependencies() {
@@ -111,6 +114,96 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
         ),
       );
     }
+  }
+
+  Future<void> book() async {
+    try {
+      final bool success = await _bookingService.createBooking({
+        "userId": userId!,
+        "chargerId": chargerId,
+        "date":
+            "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}",
+        "startTime":
+            "${startTime!.hour.toString().padLeft(2, '0')}:${startTime!.minute.toString().padLeft(2, '0')}:00",
+        "endTime":
+            "${endTime!.hour.toString().padLeft(2, '0')}:${endTime!.minute.toString().padLeft(2, '0')}:00",
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(
+                success ? Icons.check_circle : Icons.cancel,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Text(success ? "Booking Successful ✅" : "Booking Failed ❌"),
+            ],
+          ),
+          backgroundColor:
+              success ? AppTheme.primaryGreen : const Color(0xFFFF6B6B),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Text("Server error"),
+            ],
+          ),
+          backgroundColor: Color(0xFFFF6B6B),
+        ),
+      );
+    }
+  }
+
+  void startPayHerePayment(VoidCallback onSuccess) {
+    Map<String, dynamic> paymentObject = {
+      "sandbox": true,
+      "merchant_id": "1228683",
+      "merchant_secret":
+          "Mzg0MjQ0NzY5ODQwODcxMjY4OTA0MjgzMjE3ODE4MzUzNTY2MjU1Mw==",
+      "notify_url": "https://sample.com/notify",
+      "order_id": "ItemNo12345",
+      "items": "Electric Vehicle Charging",
+      "amount": 1000.00,
+      "currency": "LKR",
+      "first_name": "Saman",
+      "last_name": "Perera",
+      "email": "samanp@gmail.com",
+      "phone": "0771234567",
+      "address": "No.1, Galle Road",
+      "city": "Colombo",
+      "country": "Sri Lanka",
+      "delivery_address": "No. 46, Galle road, Kalutara South",
+      "delivery_city": "Kalutara",
+      "delivery_country": "Sri Lanka",
+      "custom_1": "",
+      "custom_2": ""
+    };
+
+    PayHere.startPayment(paymentObject, (paymentId) {
+      onSuccess();
+      print("One Time Payment Success. Payment Id: $paymentId");
+    }, (error) {
+      // Payment Failed nam methanata enawa
+      print("One Time Payment Failed. Error: $error");
+    }, () {
+      // User payment popup eka close kaloth
+      print("One Time Payment Dismissed");
+    });
+  }
+
+  void onPaymentSuccess() {
+    book(); // async function eka call wenne methanin
   }
 
   @override
@@ -388,7 +481,9 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: _isChecking ? null : check,
+                  onPressed: _isChecking
+                      ? null
+                      : () => startPayHerePayment(onPaymentSuccess),
                   icon: const Icon(Icons.abc),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryGreen,

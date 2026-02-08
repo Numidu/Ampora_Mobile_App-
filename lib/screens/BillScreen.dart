@@ -122,21 +122,21 @@ class _BillscreenState extends State<Billscreen> {
                 // Subscription Plans
                 SubscriptionCard(
                   title: "Basic",
-                  status: statusFor("Basic"),
+                  status: statusFor("Basic Plan"),
                   price: 1000.00,
                   onActivated: _refresh,
                   userid: userId!,
                 ),
                 SubscriptionCard(
                   title: "Premium",
-                  status: statusFor("Premium"),
+                  status: statusFor("Premium Plan"),
                   price: 5000.00,
                   onActivated: _refresh,
                   userid: userId!,
                 ),
                 SubscriptionCard(
                   title: "Enterprise",
-                  status: statusFor("Enterprise"),
+                  status: statusFor("Enterprise Plan"),
                   price: 10000.00,
                   onActivated: _refresh,
                   userid: userId!,

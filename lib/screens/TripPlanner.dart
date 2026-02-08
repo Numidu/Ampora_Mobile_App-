@@ -1,5 +1,7 @@
 import 'package:electric_app/models/colorThem.dart';
 import 'package:electric_app/service/Station_service.dart';
+import 'package:electric_app/service/chatbot_service.dart';
+import 'package:electric_app/widget/chatbotBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
@@ -20,6 +22,8 @@ class _TripPlannerState extends State<TripPlanner> {
 
   double? startLat, startLng;
   double? endLat, endLng;
+  String? startCity, endCity;
+  List<Map<String, dynamic>> chatbotStations = [];
 
   Set<gmap.Marker> markers = {};
   Set<gmap.Polyline> polylines = {};
@@ -29,14 +33,17 @@ class _TripPlannerState extends State<TripPlanner> {
 
   Map<String, dynamic>? selectedStation;
   final TextEditingController citySearchCtrl = TextEditingController();
+  bool chatOpen = false;
 
-  final places = FlutterGooglePlacesSdk("YOUR_GOOGLE_API_KEY");
+  final places =
+      FlutterGooglePlacesSdk("AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk");
 
   // ---------------- ICON LOAD ----------------
   @override
   void initState() {
     super.initState();
     _loadStationIcon();
+    fethAllStation();
   }
 
   Future<void> _init() async {
@@ -56,7 +63,7 @@ class _TripPlannerState extends State<TripPlanner> {
 
   Future<gmap.LatLng?> getCityLatLng(String city) async {
     final places =
-        FlutterGooglePlacesSdk("AIzaSyDTJZLVjkqrfqg8_G1ufEWrWSWkwbczqdw");
+        FlutterGooglePlacesSdk("AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk");
 
     final res = await places.findAutocompletePredictions(
       city,
@@ -74,6 +81,28 @@ class _TripPlannerState extends State<TripPlanner> {
     if (loc == null) return null;
 
     return gmap.LatLng(loc.lat, loc.lng);
+  }
+
+  Future<void> fethAllStation() async {
+    final stations = await StationService().fetchStations();
+    print("this is station $stationIcon");
+    for (var s in stations) {
+      markers.add(
+        gmap.Marker(
+          markerId: gmap.MarkerId(s['stationId']),
+          position: gmap.LatLng(s['latitude'], s['longitude']),
+          infoWindow: gmap.InfoWindow(
+            title: s['name'],
+            snippet: s['address'],
+          ),
+          icon: stationIcon ?? gmap.BitmapDescriptor.defaultMarker,
+          onTap: () {
+            setState(() => selectedStation = s);
+          },
+        ),
+      );
+    }
+    setState(() {});
   }
 
   // ---------------- CITY → LATLNG ----------------
@@ -151,6 +180,16 @@ class _TripPlannerState extends State<TripPlanner> {
       );
 
       final stations = trip['stations'] ?? [];
+      chatbotStations = stations.map<Map<String, dynamic>>((s) {
+        return {
+          "station_id": s['stationId'],
+          "name": s['name'],
+          "lat": s['latitude'],
+          "lng": s['longitude'],
+          "address": s['address'],
+          "status": s['status'],
+        };
+      }).toList();
 
       for (var s in stations) {
         markers.add(
@@ -295,6 +334,18 @@ class _TripPlannerState extends State<TripPlanner> {
             ),
           ),
 
+          Positioned(
+            bottom: 30,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: AppTheme.primaryGreen,
+              onPressed: () {
+                setState(() => chatOpen = true);
+              },
+              child: const Icon(Icons.chat, color: Colors.white),
+            ),
+          ),
+
           // STATION CARD
           if (selectedStation != null)
             Positioned(
@@ -306,6 +357,66 @@ class _TripPlannerState extends State<TripPlanner> {
                 onClose: () => setState(() => selectedStation = null),
               ),
             ),
+
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            bottom: 0,
+            right: chatOpen ? 0 : -360, // slide in/out
+            child: SizedBox(
+              width: 360,
+              height: MediaQuery.of(context).size.height * 0.75,
+              child: Material(
+                elevation: 20,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    // 🔹 HEADER
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      decoration: const BoxDecoration(
+                        color: AppTheme.primaryGreen,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "AMPORA Assistant ⚡",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () {
+                              setState(() => chatOpen = false);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // 🔹 MESSAGES
+                    Expanded(
+                      child: ChatbotBody(
+                        startCity: startCity,
+                        endCity: endCity,
+                        socLevel: 75,
+                        stations: chatbotStations, // pass real stations here
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -400,17 +511,19 @@ class _TripPlannerState extends State<TripPlanner> {
                   children: [
                     PlacePickerField(
                       label: "Start Location",
-                      onSelected: (lat, lng, _) {
+                      onSelected: (lat, lng, name) {
                         startLat = lat;
                         startLng = lng;
+                        startCity = name;
                       },
                     ),
                     const SizedBox(height: 12),
                     PlacePickerField(
                       label: "Destination",
-                      onSelected: (lat, lng, _) {
+                      onSelected: (lat, lng, name) {
                         endLat = lat;
                         endLng = lng;
+                        endCity = name;
                       },
                     ),
                   ],

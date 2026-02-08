@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         'screens/SignIn': (context) => const Signinscreen(),
         'screen/Charger': (context) => const Chargerscreen(),
         'screen/ChargerDetails': (context) => const ChargerDetailsScreen(),
-        'screen/Station': (context) => const Stationscreen(),
+        'screen/Station': (context) => const StationBookingScreen(),
         'screen/Splash': (context) => const SplashScreen(),
         'screen/ScanPage': (context) => const ScanPage()
       },

@@ -18,7 +18,7 @@ class PlacePickerField extends StatefulWidget {
 class _PlacePickerFieldState extends State<PlacePickerField> {
   final _controller = TextEditingController();
   final places =
-      FlutterGooglePlacesSdk("AIzaSyDTJZLVjkqrfqg8_G1ufEWrWSWkwbczqdw");
+      FlutterGooglePlacesSdk("AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk");
 
   List<AutocompletePrediction> predictions = [];
 
