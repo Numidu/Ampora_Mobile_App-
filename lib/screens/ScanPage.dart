@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:electric_app/models/user.dart';
+import 'package:electric_app/provider/authj_provider.dart';
 import 'package:electric_app/screens/CharginPage.dart';
-import 'package:electric_app/service/charging_ws_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../service/charging_ws_service.dart';
+import 'package:provider/provider.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -14,78 +17,91 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   final ChargingWsService ws = ChargingWsService();
   bool scanned = false;
+  String? userId;
+  User? user;
 
-  Future<void> onQrScanned(String uid, String stationId) async {
-    ws.connect();
+  Future<void> onQrScanned(String chargerId) async {
+    try {
+      print("Connecting WS...");
 
-    // send AUTH
-    ws.send({
-      "type": "AUTH_REQUEST",
-      "uid": uid,
-    });
+      ws.connect();
 
-    // wait ONLY for first AUTH_RESPONSE
-    final message = await ws.stream.first;
-    final data = jsonDecode(message);
+      print("Sending QR_SESSION_START");
 
-    if (data["type"] == "AUTH_RESPONSE" && data["authorized"] == true) {
-      // start charging
       ws.send({
-        "type": "SESSION_START",
-        "stationId": stationId,
+        "type": "QR_SESSION_START",
+        "userId": userId,
+        "chargerId": chargerId
       });
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChargingPage(ws: ws),
-        ),
-      );
-    } else {
+      final message = await ws.stream.first;
+
+      final data = jsonDecode(message);
+
+      print("WS RESPONSE: $data");
+
+      if (data["type"] == "QR_AUTH_OK") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChargingPage(ws: ws),
+          ),
+        );
+      } else {
+        throw Exception("Authorization failed");
+      }
+    } catch (e) {
+      print("QR ERROR: $e");
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("AUTH FAILED")),
+        const SnackBar(content: Text("Charging start failed")),
       );
+
+      scanned = false;
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    user = context.read<AuthProvider>().currentUser;
+    userId = user?.userId;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Scan QR Code"),
+        title: const Text("Scan Charger QR"),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          /// QR SCANNER
-          Expanded(
-            child: MobileScanner(
-              onDetect: (capture) {
-                if (scanned) return;
-                scanned = true;
+      body: MobileScanner(
+        onDetect: (capture) {
+          if (scanned) return;
 
-                final raw = capture.barcodes.first.rawValue ?? "";
-                final data = jsonDecode(raw);
+          final raw = capture.barcodes.first.rawValue;
 
-                onQrScanned(data["uid"], data["stationId"]);
-              },
-            ),
-          ),
+          if (raw == null) return;
 
-          /// TEST BUTTON (NO QR)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {
-                onQrScanned(
-                  "53 18 14 05", // RFID UID
-                  "EV-AMP-001", // Station ID
-                );
-              },
-              child: const Text("TEST START (NO QR)"),
-            ),
-          ),
-        ],
+          print("QR RAW: $raw");
+
+          try {
+            final data = jsonDecode(raw);
+
+            final chargerId = data["chargerId"];
+
+            scanned = true;
+
+            onQrScanned(chargerId);
+          } catch (e) {
+            print("QR PARSE ERROR");
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Invalid QR Code")),
+            );
+          }
+        },
       ),
     );
   }

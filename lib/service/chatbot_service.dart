@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ChatbotService {
-  final String baseUrl = "https://ampora.dev/ml/chat";
+  final String baseUrl = "http://13.211.243.202:8001/chat";
 
   Future<Map<String, dynamic>> sendMessage(Map<String, dynamic> message) async {
     final res = await http.post(

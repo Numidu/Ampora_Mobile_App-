@@ -194,16 +194,14 @@ class _ChargerDetailsScreenState extends State<ChargerDetailsScreen> {
       onSuccess();
       print("One Time Payment Success. Payment Id: $paymentId");
     }, (error) {
-      // Payment Failed nam methanata enawa
       print("One Time Payment Failed. Error: $error");
     }, () {
-      // User payment popup eka close kaloth
       print("One Time Payment Dismissed");
     });
   }
 
   void onPaymentSuccess() {
-    book(); // async function eka call wenne methanin
+    book();
   }
 
   @override

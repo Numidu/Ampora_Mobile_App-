@@ -25,32 +25,34 @@ class _ChargingPageState extends State<ChargingPage> {
     super.initState();
 
     sub = widget.ws.stream.listen((message) {
-      if (stopped) return; // 🔑 VERY IMPORTANT
+      if (stopped) return;
 
       final data = jsonDecode(message);
+
       if (data["type"] == "LIVE") {
         setState(() {
           power = (data["power"] as num).toDouble();
           energy = (data["energy"] as num).toDouble();
         });
       }
+
+      if (data["type"] == "SESSION_END") {
+        stopCharging();
+      }
     });
   }
 
   void stopCharging() {
     if (stopped) return;
+
     stopped = true;
 
-    // 1️⃣ stop backend session
     widget.ws.send({"type": "SESSION_END"});
 
-    // 2️⃣ stop listening BEFORE navigation
     sub?.cancel();
 
-    // 3️⃣ calculate cost
-    final cost = energy * 50; // example tariff
+    final cost = energy * 85;
 
-    // 4️⃣ navigate to summary (THIS WILL NOW WORK)
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -65,33 +67,71 @@ class _ChargingPageState extends State<ChargingPage> {
   @override
   void dispose() {
     sub?.cancel();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Charging")),
+      appBar: AppBar(
+        title: const Text("Charging"),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Power: $power kW", style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 16),
-            Text(
-              "Energy: ${energy.toStringAsFixed(2)} kWh",
-              style: const TextStyle(fontSize: 20),
+            const Icon(
+              Icons.bolt,
+              size: 80,
+              color: Colors.green,
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
+            Text(
+              "Power",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+            Text(
+              "$power kW",
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+            Text(
+              "Energy Used",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+            Text(
+              "${energy.toStringAsFixed(2)} kWh",
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 60),
             ElevatedButton(
               onPressed: stopCharging,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
               ),
-              child: const Text("STOP"),
+              child: const Text(
+                "STOP CHARGING",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),

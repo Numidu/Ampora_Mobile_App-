@@ -5,6 +5,7 @@ import 'package:electric_app/widget/chatbotBody.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmap;
 
 import 'package:electric_app/service/direction_service.dart';
@@ -36,14 +37,13 @@ class _TripPlannerState extends State<TripPlanner> {
   bool chatOpen = false;
 
   final places =
-      FlutterGooglePlacesSdk("AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk");
+      FlutterGooglePlacesSdk("AIzaSyBcfT02dkkW7CCPfjL6iAZLu5tDj2pkWxE");
 
   // ---------------- ICON LOAD ----------------
   @override
   void initState() {
     super.initState();
-    _loadStationIcon();
-    fethAllStation();
+    _requestLocationPermission();
   }
 
   Future<void> _init() async {
@@ -63,7 +63,7 @@ class _TripPlannerState extends State<TripPlanner> {
 
   Future<gmap.LatLng?> getCityLatLng(String city) async {
     final places =
-        FlutterGooglePlacesSdk("AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk");
+        FlutterGooglePlacesSdk("AIzaSyBcfT02dkkW7CCPfjL6iAZLu5tDj2pkWxE");
 
     final res = await places.findAutocompletePredictions(
       city,
@@ -81,6 +81,18 @@ class _TripPlannerState extends State<TripPlanner> {
     if (loc == null) return null;
 
     return gmap.LatLng(loc.lat, loc.lng);
+  }
+
+  Future<void> _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      print("Location permission permanently denied");
+    }
   }
 
   Future<void> fethAllStation() async {
@@ -247,7 +259,11 @@ class _TripPlannerState extends State<TripPlanner> {
               target: gmap.LatLng(7.8731, 80.7718),
               zoom: 7,
             ),
-            onMapCreated: (c) => mapController = c,
+            onMapCreated: (c) async {
+              mapController = c;
+              await _loadStationIcon();
+              await fethAllStation();
+            },
             markers: markers,
             polylines: polylines,
             myLocationEnabled: true,

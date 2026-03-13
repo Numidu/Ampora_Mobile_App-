@@ -48,10 +48,17 @@ dependencies:
   payhere_mobilesdk_flutter: ^3.1.1
   mobile_scanner: ^5.0.0
   web_socket_channel: ^2.4.0
+  geolocator: 9.0.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "images/logo1.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

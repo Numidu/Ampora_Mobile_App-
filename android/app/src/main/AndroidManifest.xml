@@ -2,6 +2,12 @@
     package="com.example.electric_app"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
     <application
         android:label="electric_app"
         android:name="${applicationName}"
@@ -13,7 +19,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCGX_5oc5ijf_B-df9TT_zocjcc4-qfBRk" />
+            android:value="AIzaSyBcfT02dkkW7CCPfjL6iAZLu5tDj2pkWxE" />
 
         <activity
             android:name=".MainActivity"
